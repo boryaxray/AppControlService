@@ -1,0 +1,12 @@
+﻿<?xml version='1.0' encoding='utf-8'?>
+<SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="ApplicationControlService.Properties" GeneratedClassName="Settings">
+  <Profiles />
+  <Settings>
+    <Setting Name="LogsPath" Type="System.String" Scope="User">
+      <Value Profile="(Default)">C:\ProgramData\AppControl\Logs</Value>
+    </Setting>
+    <Setting Name="WhiteListPath" Type="System.String" Scope="User">
+      <Value Profile="(Default)">C:\ProgramData\AppControl\WhiteList</Value>
+    </Setting>
+  </Settings>
+</SettingsFile>

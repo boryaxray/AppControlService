@@ -1,0 +1,117 @@
+C:\Users\alek7\OneDrive\Рабочий стол\ApplicationControlService\obj\Debug\ApplicationControlService.csproj.AssemblyReference.cache
+C:\Users\alek7\OneDrive\Рабочий стол\ApplicationControlService\obj\Debug\ApplicationControlService.csproj.CoreCompileInputs.cache
+C:\Users\alek7\OneDrive\Рабочий стол\ApplicationControlService\bin\Debug\ApplicationControlService.exe.config
+C:\Users\alek7\OneDrive\Рабочий стол\ApplicationControlService\bin\Debug\ApplicationControlService.exe
+C:\Users\alek7\OneDrive\Рабочий стол\ApplicationControlService\bin\Debug\ApplicationControlService.pdb
+C:\Users\alek7\OneDrive\Рабочий стол\ApplicationControlService\obj\Debug\ApplicationControlService.exe
+C:\Users\alek7\OneDrive\Рабочий стол\ApplicationControlService\obj\Debug\ApplicationControlService.pdb
+C:\Users\alek7\OneDrive\Рабочий стол\ApplicationControlService\bin\Debug\Microsoft.Bcl.AsyncInterfaces.dll
+C:\Users\alek7\OneDrive\Рабочий стол\ApplicationControlService\bin\Debug\System.Buffers.dll
+C:\Users\alek7\OneDrive\Рабочий стол\ApplicationControlService\bin\Debug\System.CodeDom.dll
+C:\Users\alek7\OneDrive\Рабочий стол\ApplicationControlService\bin\Debug\System.IO.Pipelines.dll
+C:\Users\alek7\OneDrive\Рабочий стол\ApplicationControlService\bin\Debug\System.Memory.dll
+C:\Users\alek7\OneDrive\Рабочий стол\ApplicationControlService\bin\Debug\System.Numerics.Vectors.dll
+C:\Users\alek7\OneDrive\Рабочий стол\ApplicationControlService\bin\Debug\System.Runtime.CompilerServices.Unsafe.dll
+C:\Users\alek7\OneDrive\Рабочий стол\ApplicationControlService\bin\Debug\System.Text.Encodings.Web.dll
+C:\Users\alek7\OneDrive\Рабочий стол\ApplicationControlService\bin\Debug\System.Text.Json.dll
+C:\Users\alek7\OneDrive\Рабочий стол\ApplicationControlService\bin\Debug\System.Threading.Tasks.Extensions.dll
+C:\Users\alek7\OneDrive\Рабочий стол\ApplicationControlService\bin\Debug\Microsoft.Bcl.AsyncInterfaces.xml
+C:\Users\alek7\OneDrive\Рабочий стол\ApplicationControlService\bin\Debug\System.Buffers.xml
+C:\Users\alek7\OneDrive\Рабочий стол\ApplicationControlService\bin\Debug\System.CodeDom.xml
+C:\Users\alek7\OneDrive\Рабочий стол\ApplicationControlService\bin\Debug\System.IO.Pipelines.xml
+C:\Users\alek7\OneDrive\Рабочий стол\ApplicationControlService\bin\Debug\System.Memory.xml
+C:\Users\alek7\OneDrive\Рабочий стол\ApplicationControlService\bin\Debug\System.Numerics.Vectors.xml
+C:\Users\alek7\OneDrive\Рабочий стол\ApplicationControlService\bin\Debug\System.Runtime.CompilerServices.Unsafe.xml
+C:\Users\alek7\OneDrive\Рабочий стол\ApplicationControlService\bin\Debug\System.Text.Encodings.Web.xml
+C:\Users\alek7\OneDrive\Рабочий стол\ApplicationControlService\bin\Debug\System.Text.Json.xml
+C:\Users\alek7\OneDrive\Рабочий стол\ApplicationControlService\bin\Debug\System.Threading.Tasks.Extensions.xml
+C:\Users\alek7\OneDrive\Рабочий стол\ApplicationControlService\obj\Debug\Applicat.E87E3FCA.Up2Date
+C:\Users\alek7\OneDrive\Рабочий стол\ApplicationControlService\obj\Debug\ApplicationControlService.exe.config
+D:\ApplicationControlService\bin\Debug\ApplicationControlService.exe.config
+D:\ApplicationControlService\bin\Debug\ApplicationControlService.exe
+D:\ApplicationControlService\bin\Debug\ApplicationControlService.pdb
+D:\ApplicationControlService\bin\Debug\Microsoft.Bcl.AsyncInterfaces.dll
+D:\ApplicationControlService\bin\Debug\System.Buffers.dll
+D:\ApplicationControlService\bin\Debug\System.CodeDom.dll
+D:\ApplicationControlService\bin\Debug\System.IO.Pipelines.dll
+D:\ApplicationControlService\bin\Debug\System.Memory.dll
+D:\ApplicationControlService\bin\Debug\System.Numerics.Vectors.dll
+D:\ApplicationControlService\bin\Debug\System.Runtime.CompilerServices.Unsafe.dll
+D:\ApplicationControlService\bin\Debug\System.Text.Encodings.Web.dll
+D:\ApplicationControlService\bin\Debug\System.Text.Json.dll
+D:\ApplicationControlService\bin\Debug\System.Threading.Tasks.Extensions.dll
+D:\ApplicationControlService\bin\Debug\Microsoft.Bcl.AsyncInterfaces.xml
+D:\ApplicationControlService\bin\Debug\System.Buffers.xml
+D:\ApplicationControlService\bin\Debug\System.CodeDom.xml
+D:\ApplicationControlService\bin\Debug\System.IO.Pipelines.xml
+D:\ApplicationControlService\bin\Debug\System.Memory.xml
+D:\ApplicationControlService\bin\Debug\System.Numerics.Vectors.xml
+D:\ApplicationControlService\bin\Debug\System.Runtime.CompilerServices.Unsafe.xml
+D:\ApplicationControlService\bin\Debug\System.Text.Encodings.Web.xml
+D:\ApplicationControlService\bin\Debug\System.Text.Json.xml
+D:\ApplicationControlService\bin\Debug\System.Threading.Tasks.Extensions.xml
+D:\ApplicationControlService\obj\Debug\ApplicationControlService.csproj.AssemblyReference.cache
+D:\ApplicationControlService\obj\Debug\ApplicationControlService.exe.config
+D:\ApplicationControlService\obj\Debug\ApplicationControlService.csproj.CoreCompileInputs.cache
+D:\ApplicationControlService\obj\Debug\Applicat.E87E3FCA.Up2Date
+D:\ApplicationControlService\obj\Debug\ApplicationControlService.exe
+D:\ApplicationControlService\obj\Debug\ApplicationControlService.pdb
+C:\Users\alek7\OneDrive\Рабочий стол\777\ApplicationControlService\bin\Debug\ApplicationControlService.exe.config
+C:\Users\alek7\OneDrive\Рабочий стол\777\ApplicationControlService\bin\Debug\ApplicationControlService.exe
+C:\Users\alek7\OneDrive\Рабочий стол\777\ApplicationControlService\bin\Debug\ApplicationControlService.pdb
+C:\Users\alek7\OneDrive\Рабочий стол\777\ApplicationControlService\bin\Debug\Microsoft.Bcl.AsyncInterfaces.dll
+C:\Users\alek7\OneDrive\Рабочий стол\777\ApplicationControlService\bin\Debug\System.Buffers.dll
+C:\Users\alek7\OneDrive\Рабочий стол\777\ApplicationControlService\bin\Debug\System.CodeDom.dll
+C:\Users\alek7\OneDrive\Рабочий стол\777\ApplicationControlService\bin\Debug\System.IO.Pipelines.dll
+C:\Users\alek7\OneDrive\Рабочий стол\777\ApplicationControlService\bin\Debug\System.Memory.dll
+C:\Users\alek7\OneDrive\Рабочий стол\777\ApplicationControlService\bin\Debug\System.Numerics.Vectors.dll
+C:\Users\alek7\OneDrive\Рабочий стол\777\ApplicationControlService\bin\Debug\System.Runtime.CompilerServices.Unsafe.dll
+C:\Users\alek7\OneDrive\Рабочий стол\777\ApplicationControlService\bin\Debug\System.Text.Encodings.Web.dll
+C:\Users\alek7\OneDrive\Рабочий стол\777\ApplicationControlService\bin\Debug\System.Text.Json.dll
+C:\Users\alek7\OneDrive\Рабочий стол\777\ApplicationControlService\bin\Debug\System.Threading.Tasks.Extensions.dll
+C:\Users\alek7\OneDrive\Рабочий стол\777\ApplicationControlService\bin\Debug\Microsoft.Bcl.AsyncInterfaces.xml
+C:\Users\alek7\OneDrive\Рабочий стол\777\ApplicationControlService\bin\Debug\System.Buffers.xml
+C:\Users\alek7\OneDrive\Рабочий стол\777\ApplicationControlService\bin\Debug\System.CodeDom.xml
+C:\Users\alek7\OneDrive\Рабочий стол\777\ApplicationControlService\bin\Debug\System.IO.Pipelines.xml
+C:\Users\alek7\OneDrive\Рабочий стол\777\ApplicationControlService\bin\Debug\System.Memory.xml
+C:\Users\alek7\OneDrive\Рабочий стол\777\ApplicationControlService\bin\Debug\System.Numerics.Vectors.xml
+C:\Users\alek7\OneDrive\Рабочий стол\777\ApplicationControlService\bin\Debug\System.Runtime.CompilerServices.Unsafe.xml
+C:\Users\alek7\OneDrive\Рабочий стол\777\ApplicationControlService\bin\Debug\System.Text.Encodings.Web.xml
+C:\Users\alek7\OneDrive\Рабочий стол\777\ApplicationControlService\bin\Debug\System.Text.Json.xml
+C:\Users\alek7\OneDrive\Рабочий стол\777\ApplicationControlService\bin\Debug\System.Threading.Tasks.Extensions.xml
+C:\Users\alek7\OneDrive\Рабочий стол\777\ApplicationControlService\obj\Debug\ApplicationControlService.csproj.AssemblyReference.cache
+C:\Users\alek7\OneDrive\Рабочий стол\777\ApplicationControlService\obj\Debug\ApplicationControlService.exe.config
+C:\Users\alek7\OneDrive\Рабочий стол\777\ApplicationControlService\obj\Debug\ApplicationControlService.csproj.CoreCompileInputs.cache
+C:\Users\alek7\OneDrive\Рабочий стол\777\ApplicationControlService\obj\Debug\Applicat.E87E3FCA.Up2Date
+C:\Users\alek7\OneDrive\Рабочий стол\777\ApplicationControlService\obj\Debug\ApplicationControlService.exe
+C:\Users\alek7\OneDrive\Рабочий стол\777\ApplicationControlService\obj\Debug\ApplicationControlService.pdb
+C:\Users\alek7\OneDrive\Рабочий стол\Курсач\ApplicationControlService\bin\Debug\ApplicationControlService.exe
+C:\Users\alek7\OneDrive\Рабочий стол\Курсач\ApplicationControlService\bin\Debug\ApplicationControlService.exe.config
+C:\Users\alek7\OneDrive\Рабочий стол\Курсач\ApplicationControlService\bin\Debug\Microsoft.Bcl.AsyncInterfaces.dll
+C:\Users\alek7\OneDrive\Рабочий стол\Курсач\ApplicationControlService\bin\Debug\Newtonsoft.Json.dll
+C:\Users\alek7\OneDrive\Рабочий стол\Курсач\ApplicationControlService\bin\Debug\System.Buffers.dll
+C:\Users\alek7\OneDrive\Рабочий стол\Курсач\ApplicationControlService\bin\Debug\System.CodeDom.dll
+C:\Users\alek7\OneDrive\Рабочий стол\Курсач\ApplicationControlService\bin\Debug\System.IO.Pipelines.dll
+C:\Users\alek7\OneDrive\Рабочий стол\Курсач\ApplicationControlService\bin\Debug\System.Memory.dll
+C:\Users\alek7\OneDrive\Рабочий стол\Курсач\ApplicationControlService\bin\Debug\System.Numerics.Vectors.dll
+C:\Users\alek7\OneDrive\Рабочий стол\Курсач\ApplicationControlService\bin\Debug\System.Runtime.CompilerServices.Unsafe.dll
+C:\Users\alek7\OneDrive\Рабочий стол\Курсач\ApplicationControlService\bin\Debug\System.Text.Encodings.Web.dll
+C:\Users\alek7\OneDrive\Рабочий стол\Курсач\ApplicationControlService\bin\Debug\System.Text.Json.dll
+C:\Users\alek7\OneDrive\Рабочий стол\Курсач\ApplicationControlService\bin\Debug\System.Threading.Tasks.Extensions.dll
+C:\Users\alek7\OneDrive\Рабочий стол\Курсач\ApplicationControlService\bin\Debug\Microsoft.Bcl.AsyncInterfaces.xml
+C:\Users\alek7\OneDrive\Рабочий стол\Курсач\ApplicationControlService\bin\Debug\Newtonsoft.Json.xml
+C:\Users\alek7\OneDrive\Рабочий стол\Курсач\ApplicationControlService\bin\Debug\System.Buffers.xml
+C:\Users\alek7\OneDrive\Рабочий стол\Курсач\ApplicationControlService\bin\Debug\System.CodeDom.xml
+C:\Users\alek7\OneDrive\Рабочий стол\Курсач\ApplicationControlService\bin\Debug\System.IO.Pipelines.xml
+C:\Users\alek7\OneDrive\Рабочий стол\Курсач\ApplicationControlService\bin\Debug\System.Memory.xml
+C:\Users\alek7\OneDrive\Рабочий стол\Курсач\ApplicationControlService\bin\Debug\System.Numerics.Vectors.xml
+C:\Users\alek7\OneDrive\Рабочий стол\Курсач\ApplicationControlService\bin\Debug\System.Runtime.CompilerServices.Unsafe.xml
+C:\Users\alek7\OneDrive\Рабочий стол\Курсач\ApplicationControlService\bin\Debug\System.Text.Encodings.Web.xml
+C:\Users\alek7\OneDrive\Рабочий стол\Курсач\ApplicationControlService\bin\Debug\System.Text.Json.xml
+C:\Users\alek7\OneDrive\Рабочий стол\Курсач\ApplicationControlService\bin\Debug\System.Threading.Tasks.Extensions.xml
+C:\Users\alek7\OneDrive\Рабочий стол\Курсач\ApplicationControlService\obj\Debug\ApplicationControlService.csproj.AssemblyReference.cache
+C:\Users\alek7\OneDrive\Рабочий стол\Курсач\ApplicationControlService\obj\Debug\ApplicationControlService.csproj.CoreCompileInputs.cache
+C:\Users\alek7\OneDrive\Рабочий стол\Курсач\ApplicationControlService\obj\Debug\Applicat.E87E3FCA.Up2Date
+C:\Users\alek7\OneDrive\Рабочий стол\Курсач\ApplicationControlService\obj\Debug\ApplicationControlService.exe
+C:\Users\alek7\OneDrive\Рабочий стол\Курсач\ApplicationControlService\obj\Debug\ApplicationControlService.pdb
+C:\Users\alek7\OneDrive\Рабочий стол\Курсач\ApplicationControlService\obj\Debug\ApplicationControlService.exe.config
