@@ -20,20 +20,27 @@ namespace ApplicationControlService
         private Timer _monitorTimer;
         private Timer _configReloadTimer;
         private HashSet<string> _allowedHashes;
-        private Dictionary<int, WinApiHelper.ExtendedProcessInfo> _verifiedProcesses;
+        private Dictionary<int, VerifiedProcessEntry> _verifiedProcesses;
         private int _currentProcessId;
         private string _serviceHash;
         private ServiceConfiguration _config;
-
+        private volatile bool _shutdown;
         private readonly string _configPath;
         private readonly string _logPath;
         private readonly string _detailedLogPath;
         private readonly string _serviceLogPath;
         private readonly string _terminationsLogPath;
-
+        public event Action<Exception> OnFatalError;
         private bool _isRunning = false;
         private readonly object _lock = new object();
-
+        class VerifiedProcessEntry
+        {
+            public int ProcessId;
+            public string FilePath;
+            public string Hash;
+            public DateTime FileLastWriteUtc;
+            public DateTime VerifiedAtUtc;
+        }
         // FileSystemWatcher для отслеживания изменений конфигурационного файла
         private FileSystemWatcher _configWatcher;
         private DateTime _lastConfigModified = DateTime.MinValue;
@@ -73,7 +80,7 @@ namespace ApplicationControlService
             _terminationsLogPath = Path.Combine(_config.LogsDirectory, "terminations.log");
 
             _currentProcessId = Process.GetCurrentProcess().Id;
-            _verifiedProcesses = new Dictionary<int, WinApiHelper.ExtendedProcessInfo>();
+            _verifiedProcesses = new Dictionary<int, VerifiedProcessEntry>(); // ИЗМЕНЕНИЕ: Вернули правильный тип
             _allowedHashes = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 
             // Логируем пути
@@ -81,6 +88,14 @@ namespace ApplicationControlService
             WriteServiceLog($"Логи: {_config.LogsDirectory}");
             WriteServiceLog($"Белый список: {_config.WhiteListDirectory}");
         }
+        private void Fatal(Exception ex, string source)
+        {
+            WriteServiceLog($"FATAL [{source}]: {ex}");
+            OnFatalError?.Invoke(ex);
+            Environment.FailFast(source, ex);
+        }
+
+
         private void ConfigWatcher_Changed(object sender, FileSystemEventArgs e)
         {
             try
@@ -138,17 +153,25 @@ namespace ApplicationControlService
                     }
 
                     // Запускаем таймер мониторинга процессов
-                    _monitorTimer = new Timer(CheckProcessesCallback, null, 3000, 2000);
+                    _monitorTimer = new Timer(CheckProcessesCallback, null, 5000, 5000);
 
                     // Запускаем таймер проверки конфигурации (каждые 30 секунд)
                     _configReloadTimer = new Timer(CheckConfigReloadCallback, null, 30000, 30000);
+                    _configWatcher = new FileSystemWatcher(
+                                    Path.GetDirectoryName(_configPath),
+                                    Path.GetFileName(_configPath)
+                                );
 
+                    _configWatcher.NotifyFilter = NotifyFilters.LastWrite | NotifyFilters.Size;
+                    _configWatcher.Changed += ConfigWatcher_Changed;
+                    _configWatcher.EnableRaisingEvents = true;
                     _isRunning = true;
                     WriteServiceLog("Монитор процессов запущен");
                 }
                 catch (Exception ex)
                 {
                     WriteServiceLog($"Ошибка запуска: {ex.Message}");
+                    Fatal(ex, "Start");
                     throw;
                 }
             }
@@ -162,6 +185,8 @@ namespace ApplicationControlService
                     return;
 
                 WriteServiceLog("Остановка");
+
+                _shutdown = true;
 
                 _monitorTimer?.Dispose();
                 _monitorTimer = null;
@@ -207,6 +232,8 @@ namespace ApplicationControlService
         {
             try
             {
+                if (_shutdown)
+                    return;
                 lock (_lock)
                 {
                     if (File.Exists(_configPath))
@@ -224,6 +251,7 @@ namespace ApplicationControlService
             catch (Exception ex)
             {
                 WriteServiceLog($"Ошибка проверки конфигурации: {ex.Message}");
+                Fatal(ex, "CheckConfigReloadCallback");
             }
         }
 
@@ -288,6 +316,7 @@ namespace ApplicationControlService
             {
                 WriteServiceLog($"Ошибка загрузки конфигурации: {ex.Message}");
                 _allowedHashes = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+                Fatal(ex, "LoadConfiguration");
             }
         }
 
@@ -405,7 +434,7 @@ namespace ApplicationControlService
         {
             try
             {
-                if (!_isRunning)
+                if (_shutdown)
                     return;
 
                 Process[] processes = Process.GetProcesses();
@@ -421,6 +450,35 @@ namespace ApplicationControlService
 
                     try
                     {
+                        lock (_lock)
+                        {
+                            // Проверяем кэш
+                            if (_verifiedProcesses.TryGetValue(process.Id, out var cached))
+                            {
+                                // PID тот же, но файл мог измениться
+                                DateTime lastWrite;
+                                try
+                                {
+                                    lastWrite = File.GetLastWriteTimeUtc(cached.FilePath);
+                                }
+                                catch
+                                {
+                                    // Если файл удален или недоступен, сбрасываем кэш
+                                    _verifiedProcesses.Remove(process.Id);
+                                    continue;
+                                }
+
+                                if (cached.FileLastWriteUtc == lastWrite)
+                                {
+                                    // Файл не менялся → доверяем кешу
+                                    continue;
+                                }
+
+                                // Файл изменился → сбрасываем кеш
+                                _verifiedProcesses.Remove(process.Id);
+                            }
+                        }
+
                         // Пропускаем себя
                         if (process.Id == _currentProcessId)
                             continue;
@@ -448,7 +506,15 @@ namespace ApplicationControlService
                         if (string.IsNullOrEmpty(filePath) || !File.Exists(filePath))
                         {
                             // Пытаемся получить путь стандартным способом
-                            filePath = process.MainModule?.FileName;
+                            try
+                            {
+                                filePath = process.MainModule?.FileName;
+                            }
+                            catch
+                            {
+                                // Нет доступа к MainModule
+                            }
+
                             if (string.IsNullOrEmpty(filePath) || !File.Exists(filePath))
                             {
                                 skippedCount++;
@@ -470,6 +536,19 @@ namespace ApplicationControlService
                         // Логируем детали
                         WriteDetailedLog(processInfo, hash, isAllowed);
 
+                        // Кэшируем проверенный процесс
+                        lock (_lock)
+                        {
+                            _verifiedProcesses[process.Id] = new VerifiedProcessEntry
+                            {
+                                ProcessId = process.Id,
+                                FilePath = filePath,
+                                Hash = hash,
+                                FileLastWriteUtc = File.GetLastWriteTimeUtc(filePath),
+                                VerifiedAtUtc = DateTime.UtcNow
+                            };
+                        }
+
                         if (!isAllowed && processInfo.Type == WinApiHelper.ProcessType.UserApplication)
                         {
                             // Пытаемся завершить только пользовательские приложения
@@ -482,6 +561,12 @@ namespace ApplicationControlService
                                     terminatedCount++;
                                     WriteTerminationLog(processInfo);
                                     WriteDetailedLogResult(processInfo, true);
+
+                                    // Удаляем из кэша, так как процесс завершен
+                                    lock (_lock)
+                                    {
+                                        _verifiedProcesses.Remove(process.Id);
+                                    }
                                 }
                                 else
                                 {
@@ -492,14 +577,6 @@ namespace ApplicationControlService
                             {
                                 WriteServiceLog($"Не удалось завершить {processInfo.ProcessName}: {killEx.Message}");
                                 WriteDetailedLogResult(processInfo, false);
-                            }
-                        }
-                        else if (isAllowed)
-                        {
-                            // Кэшируем проверенный процесс
-                            lock (_lock)
-                            {
-                                _verifiedProcesses[process.Id] = processInfo;
                             }
                         }
                     }
@@ -523,7 +600,8 @@ namespace ApplicationControlService
             }
             catch (Exception ex)
             {
-                WriteServiceLog($"Критическая ошибка в CheckProcesses: {ex.Message}");
+                WriteServiceLog($"Критическая ошибка в CheckProcessesCallback: {ex}");
+                // Не вызываем Fatal, чтобы служба могла восстановиться
             }
         }
 
@@ -624,6 +702,11 @@ namespace ApplicationControlService
 
             // Проверка 5: Проверка по списку системных процессов
             if (IsKnownSystemProcess(process.ProcessName, info.FilePath))
+            {
+                return false;
+            }
+
+            if (process.Id == Process.GetCurrentProcess().Id)
             {
                 return false;
             }

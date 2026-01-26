@@ -23,7 +23,14 @@ namespace ApplicationControlService
             {
                 return ProcessArguments(args);
             }
-
+            AppDomain.CurrentDomain.UnhandledException += (s, e) =>
+            {
+                Environment.ExitCode = -1;
+                Environment.FailFast(
+                    "Unhandled exception",
+                    e.ExceptionObject as Exception
+                );
+            };
             // Запуск как служба
             ServiceBase.Run(new ApplicationControlService());
             return 0;
@@ -224,7 +231,10 @@ namespace ApplicationControlService
             try
             {
                 Console.WriteLine("=== УСТАНОВКА СЛУЖБЫ AppControlService ===");
-
+                if (!EventLog.SourceExists("AppControlService"))
+                {
+                    EventLog.CreateEventSource("AppControlService", "Application");
+                }
                 // Проверка прав
                 if (!IsRunningAsAdministrator())
                 {
@@ -309,6 +319,17 @@ namespace ApplicationControlService
                 // 3. Добавляем описание
                 Console.WriteLine("\n3. Настройка службы...");
                 RunSCCommand($"description AppControlService \"Контроль запуска приложений\"", "описание");
+                // 3.1 НАСТРОЙКА САМОВОССТАНОВЛЕНИЯ (CRITICAL)
+                Console.WriteLine("\n3.1 Настройка самовосстановления службы...");
+                RunSCCommand(
+                    "failure AppControlService reset= 0 actions= restart/5000/restart/5000/restart/5000",
+                    "настройка восстановления"
+                );
+
+                RunSCCommand(
+                    "failureflag AppControlService 1",
+                    "включение восстановления при аварийном завершении"
+                );
 
                 // Устанавливаем тип запуска АВТОМАТИЧЕСКИЙ
                 RunSCCommand($"config AppControlService start= auto", "автозапуск");
@@ -363,55 +384,6 @@ namespace ApplicationControlService
                 Console.WriteLine($"StackTrace: {ex.StackTrace}");
                 return false;
             }
-        }
-
-        static void SetServiceParametersViaRegistry(string logsPath, string whiteListPath)
-        {
-            try
-            {
-                Console.WriteLine("Установка параметров через реестр...");
-
-                // Параметры хранятся в реестре
-                string registryPath = @"SYSTEM\CurrentControlSet\Services\AppControlService\Parameters";
-
-                using (var baseKey = Microsoft.Win32.Registry.LocalMachine)
-                using (var key = baseKey.CreateSubKey(registryPath))
-                {
-                    if (key != null)
-                    {
-                        key.SetValue("LogsPath", logsPath, Microsoft.Win32.RegistryValueKind.String);
-                        key.SetValue("WhiteListPath", whiteListPath, Microsoft.Win32.RegistryValueKind.String);
-                        Console.WriteLine($"Параметры сохранены в реестре: {logsPath}, {whiteListPath}");
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Ошибка сохранения в реестр: {ex.Message}");
-            }
-        }
-
-        private static void CreateSimpleConfig(string configPath)
-        {
-            try
-            {
-                string simpleConfig = @"[
-                  {
-                    ""Name"": ""explorer"",
-                    ""Hash"": """"
-                  },
-                  {
-                    ""Name"": ""notepad"",
-                    ""Hash"": """"
-                  },
-                  {
-                    ""Name"": ""cmd"",
-                    ""Hash"": """"
-                  }
-                ]";
-                File.WriteAllText(configPath, simpleConfig, Encoding.UTF8);
-            }
-            catch { }
         }
         static bool UninstallService()
         {

@@ -577,7 +577,7 @@ namespace ApplicationControlService
             }
 
             // 5. Сессия 0 - всегда системные службы
-            if (info.SessionId == 0)
+            if (info.SessionId <= 0)
             {
                 return ProcessType.SystemService;
             }

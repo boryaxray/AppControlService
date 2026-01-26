@@ -12,10 +12,11 @@ namespace ApplicationControlService
 
         public ApplicationControlService()
         {
-            this.ServiceName = "AppControlService";
+            this.ServiceName = "ApplicationControlService";
             this.CanStop = true;
             this.CanPauseAndContinue = false;
             this.AutoLog = false;
+            ExitCode = -1; 
         }
 
         protected override void OnStart(string[] args)
@@ -64,13 +65,24 @@ namespace ApplicationControlService
                 // Создаем конфигурацию с путями
                 _config = new ServiceConfiguration(logsPath, whiteListPath);
                 _monitor = new ProcessMonitor(_config);
-                _monitor.Start();
+                _monitor.OnFatalError += ex =>
+                {
+                    EventLog.WriteEntry(
+                        ServiceName,
+                        "Monitor crashed: " + ex,
+                        EventLogEntryType.Error
+                    );
 
+                    ExitCode = -1;
+                    Environment.FailFast("Monitor crashed", ex);
+                };
+                _monitor.Start();
                 LogService("Служба запущена");
             }
             catch (Exception ex)
             {
                 LogService($"Ошибка запуска: {ex.Message}\n{ex.StackTrace}");
+                ExitCode = -1;
                 throw;
             }
         }
