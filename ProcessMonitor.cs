@@ -300,15 +300,19 @@ namespace ApplicationControlService
                             StringComparer.OrdinalIgnoreCase);
 
                         WriteServiceLog($"Загружено {validItems.Count} приложений из белого списка");
+
+                        // ПРОСТОЕ ИЗМЕНЕНИЕ: очищаем кэш при загрузке конфигурации
+                        lock (_lock)
+                        {
+                            _verifiedProcesses.Clear();
+                            WriteServiceLog("Кэш проверенных процессов очищен");
+                        }
                     }
                 }
                 catch (Exception ex)
                 {
-                    // ИЗМЕНЕНИЕ: Не создаем новый конфиг при ошибке парсинга
                     WriteServiceLog($"Ошибка парсинга конфига: {ex.Message}. Используется пустой список.");
                     _allowedHashes = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-
-                    // Только логируем ошибку, но не перезаписываем файл
                     WriteServiceLog($"Файл конфигурации поврежден. Пожалуйста, исправьте его вручную: {_configPath}");
                 }
             }
