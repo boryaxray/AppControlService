@@ -6,6 +6,7 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Management;
 using System.Runtime.Serialization.Json;
 using System.Security.Cryptography;
 using System.Text;
@@ -33,6 +34,12 @@ namespace ApplicationControlService
         public event Action<Exception> OnFatalError;
         private bool _isRunning = false;
         private readonly object _lock = new object();
+        bool isCurrentlyInWhiteList = false;
+        string currentHash = string.Empty;
+
+        private Dictionary<int, int> _parentChildMap = new Dictionary<int, int>(); // PID -> ParentPID
+        private HashSet<int> _allowedProcessIds = new HashSet<int>(); // Разрешенные процессы и их дети
+
         class VerifiedProcessEntry
         {
             public int ProcessId;
@@ -92,7 +99,7 @@ namespace ApplicationControlService
         {
             WriteServiceLog($"FATAL [{source}]: {ex}");
             OnFatalError?.Invoke(ex);
-            Environment.FailFast(source, ex);
+            throw new Exception($"Fatal error in {source}", ex);
         }
 
 
@@ -432,7 +439,7 @@ namespace ApplicationControlService
         }
         private void CheckProcessesCallback(object state)
         {
-            try
+            /*try
             {
                 if (_shutdown)
                     return;
@@ -452,30 +459,24 @@ namespace ApplicationControlService
                     {
                         lock (_lock)
                         {
-                            // Проверяем кэш
+                            // Даже если процесс в кэше, перепроверяем хэш и наличие в белом списке
                             if (_verifiedProcesses.TryGetValue(process.Id, out var cached))
                             {
-                                // PID тот же, но файл мог измениться
-                                DateTime lastWrite;
-                                try
+                                // Проверяем, не изменился ли файл
+                                if (File.GetLastWriteTimeUtc(cached.FilePath) == cached.FileLastWriteUtc)
                                 {
-                                    lastWrite = File.GetLastWriteTimeUtc(cached.FilePath);
-                                }
-                                catch
-                                {
-                                    // Если файл удален или недоступен, сбрасываем кэш
-                                    _verifiedProcesses.Remove(process.Id);
-                                    continue;
-                                }
+                                    // Файл не менялся, но нужно проверить, остался ли он в белом списке
+                                    isCurrentlyInWhiteList = _allowedHashes.Contains(cached.Hash);
+                                    currentHash = cached.Hash;
 
-                                if (cached.FileLastWriteUtc == lastWrite)
-                                {
-                                    // Файл не менялся → доверяем кешу
-                                    continue;
+                                    // Если всё ещё в белом списке — пропускаем проверку
+                                    if (isCurrentlyInWhiteList)
+                                    {
+                                        continue;
+                                    }
+                                    // Если удалили из белого списка — НЕ ПРОПУСКАЕМ, а идём дальше
                                 }
-
-                                // Файл изменился → сбрасываем кеш
-                                _verifiedProcesses.Remove(process.Id);
+                                // Если файл изменился — сбрасываем кэш и проверяем заново
                             }
                         }
 
@@ -602,9 +603,296 @@ namespace ApplicationControlService
             {
                 WriteServiceLog($"Критическая ошибка в CheckProcessesCallback: {ex}");
                 // Не вызываем Fatal, чтобы служба могла восстановиться
+            }*/
+            try
+            {
+                if (_shutdown)
+                    return;
+
+                // Обновляем карту родитель-потомок
+                UpdateParentChildMap();
+
+                Process[] processes = Process.GetProcesses();
+                int total = processes.Length;
+                int checkedCount = 0;
+                int terminatedCount = 0;
+                int skippedCount = 0;
+                int protectedCount = 0;
+
+                foreach (var process in processes)
+                {
+                    checkedCount++;
+
+                    try
+                    {
+                        lock (_lock)
+                        {
+                            // Проверяем, разрешен ли родительский процесс
+                            if (IsChildOfAllowedProcess(process.Id))
+                            {
+                                // Добавляем в разрешенные
+                                _allowedProcessIds.Add(process.Id);
+                                continue; // Пропускаем проверку для дочерних процессов
+                            }
+
+                            // Даже если процесс в кэше, перепроверяем хэш и наличие в белом списке
+                            if (_verifiedProcesses.TryGetValue(process.Id, out var cached))
+                            {
+                                // Проверяем, не изменился ли файл
+                                if (File.GetLastWriteTimeUtc(cached.FilePath) == cached.FileLastWriteUtc)
+                                {
+                                    isCurrentlyInWhiteList = _allowedHashes.Contains(cached.Hash);
+                                    currentHash = cached.Hash;
+
+                                    if (isCurrentlyInWhiteList)
+                                    {
+                                        // Добавляем в разрешенные (для дочерних процессов)
+                                        _allowedProcessIds.Add(process.Id);
+                                        continue;
+                                    }
+                                }
+                            }
+                        }
+
+                        // Пропускаем себя
+                        if (process.Id == _currentProcessId)
+                            continue;
+
+                        // Получаем расширенную информацию через WinAPI
+                        var processInfo = WinApiHelper.GetExtendedProcessInfo(process.Id);
+
+                        // Проверяем, можно ли завершать этот процесс
+                        if (!CanTerminateProcess(process, processInfo))
+                        {
+                            if (processInfo.Type == WinApiHelper.ProcessType.SystemCritical ||
+                                processInfo.Type == WinApiHelper.ProcessType.SystemService)
+                            {
+                                protectedCount++;
+                            }
+                            else
+                            {
+                                skippedCount++;
+                            }
+                            continue;
+                        }
+
+                        // Получаем путь к файлу
+                        string filePath = processInfo.FilePath;
+                        if (string.IsNullOrEmpty(filePath) || !File.Exists(filePath))
+                        {
+                            try
+                            {
+                                filePath = process.MainModule?.FileName;
+                            }
+                            catch { }
+
+                            if (string.IsNullOrEmpty(filePath) || !File.Exists(filePath))
+                            {
+                                skippedCount++;
+                                continue;
+                            }
+                        }
+
+                        // Вычисляем хэш
+                        string hash = CalculateSHA256(filePath);
+                        if (string.IsNullOrEmpty(hash))
+                        {
+                            skippedCount++;
+                            continue;
+                        }
+
+                        // Проверяем, разрешен ли процесс
+                        bool isAllowed = _allowedHashes.Contains(hash);
+
+                        // Логируем детали
+                        WriteDetailedLog(processInfo, hash, isAllowed);
+
+                        // Кэшируем проверенный процесс
+                        lock (_lock)
+                        {
+                            _verifiedProcesses[process.Id] = new VerifiedProcessEntry
+                            {
+                                ProcessId = process.Id,
+                                FilePath = filePath,
+                                Hash = hash,
+                                FileLastWriteUtc = File.GetLastWriteTimeUtc(filePath),
+                                VerifiedAtUtc = DateTime.UtcNow
+                            };
+                        }
+
+                        if (isAllowed)
+                        {
+                            // Разрешаем процесс и его будущие дочерние процессы
+                            _allowedProcessIds.Add(process.Id);
+                        }
+                        else if (!isAllowed && processInfo.Type == WinApiHelper.ProcessType.UserApplication)
+                        {
+                            // Пытаемся завершить только пользовательские приложения
+                            try
+                            {
+                                bool terminated = TryTerminateProcess(process, processInfo);
+
+                                if (terminated)
+                                {
+                                    terminatedCount++;
+                                    WriteTerminationLog(processInfo);
+                                    WriteDetailedLogResult(processInfo, true);
+
+                                    lock (_lock)
+                                    {
+                                        _verifiedProcesses.Remove(process.Id);
+                                        _allowedProcessIds.Remove(process.Id);
+                                        // Удаляем из карты родитель-потомок
+                                        RemoveFromParentChildMap(process.Id);
+                                    }
+                                }
+                                else
+                                {
+                                    WriteDetailedLogResult(processInfo, false);
+                                }
+                            }
+                            catch (Exception killEx)
+                            {
+                                WriteServiceLog($"Не удалось завершить {processInfo.ProcessName}: {killEx.Message}");
+                                WriteDetailedLogResult(processInfo, false);
+                            }
+                        }
+                    }
+                    catch (Win32Exception ex) when (ex.NativeErrorCode == 5)
+                    {
+                        skippedCount++;
+                        continue;
+                    }
+                    catch (Exception ex)
+                    {
+                        WriteServiceLog($"Ошибка проверки процесса {process.ProcessName}: {ex.Message}");
+                        skippedCount++;
+                        continue;
+                    }
+                }
+
+                // Очистка кэша от завершенных процессов
+                CleanVerifiedCache();
+                CleanParentChildMap();
+            }
+            catch (Exception ex)
+            {
+                WriteServiceLog($"Критическая ошибка в CheckProcessesCallback: {ex}");
+            }
+        }
+        private void UpdateParentChildMap()
+        {
+            try
+            {
+                var currentProcesses = Process.GetProcesses();
+                var currentPids = new HashSet<int>(currentProcesses.Select(p => p.Id));
+
+                // Очищаем несуществующие процессы
+                var deadPids = _parentChildMap.Keys.Where(pid => !currentPids.Contains(pid)).ToList();
+                foreach (var pid in deadPids)
+                {
+                    _parentChildMap.Remove(pid);
+                }
+
+                // Обновляем информацию о родительских процессах
+                foreach (var process in currentProcesses)
+                {
+                    try
+                    {
+                        int parentPid = GetParentProcessId(process.Id);
+                        if (parentPid > 0)
+                        {
+                            _parentChildMap[process.Id] = parentPid;
+                        }
+                    }
+                    catch { }
+                }
+            }
+            catch { }
+        }
+        private int GetParentProcessId(int processId)
+        {
+            try
+            {
+                using (var searcher = new ManagementObjectSearcher(
+                    $"SELECT ParentProcessId FROM Win32_Process WHERE ProcessId = {processId}"))
+                {
+                    foreach (var obj in searcher.Get())
+                    {
+                        return Convert.ToInt32(obj["ParentProcessId"]);
+                    }
+                }
+            }
+            catch { }
+            return -1;
+        }
+
+
+        private bool IsChildOfAllowedProcess(int processId)
+        {
+            // Проверяем цепочку родительских процессов
+            int currentPid = processId;
+            int maxDepth = 10; // Максимальная глубина проверки
+
+            for (int i = 0; i < maxDepth; i++)
+            {
+                if (_parentChildMap.TryGetValue(currentPid, out int parentPid))
+                {
+                    if (_allowedProcessIds.Contains(parentPid))
+                    {
+                        return true;
+                    }
+                    currentPid = parentPid;
+                }
+                else
+                {
+                    break;
+                }
+            }
+
+            return _allowedProcessIds.Contains(processId);
+        }
+
+        private void RemoveFromParentChildMap(int processId)
+        {
+            // Удаляем запись о процессе
+            _parentChildMap.Remove(processId);
+
+            // Удаляем записи, где этот процесс является родителем
+            var children = _parentChildMap.Where(kvp => kvp.Value == processId)
+                                          .Select(kvp => kvp.Key)
+                                          .ToList();
+            foreach (var childPid in children)
+            {
+                _parentChildMap.Remove(childPid);
             }
         }
 
+        private void CleanParentChildMap()
+        {
+            try
+            {
+                var currentPids = new HashSet<int>();
+                try
+                {
+                    foreach (var process in Process.GetProcesses())
+                    {
+                        currentPids.Add(process.Id);
+                    }
+                }
+                catch { }
+
+                var deadPids = _parentChildMap.Keys.Where(pid => !currentPids.Contains(pid)).ToList();
+                foreach (var pid in deadPids)
+                {
+                    _parentChildMap.Remove(pid);
+                }
+
+                // Также очищаем разрешенные процессы
+                _allowedProcessIds.RemoveWhere(pid => !currentPids.Contains(pid));
+            }
+            catch { }
+        }
         private bool TryTerminateProcess(Process process, WinApiHelper.ExtendedProcessInfo processInfo)
         {
             try

@@ -3,19 +3,7 @@
   "WorkspaceRootPath": "C:\\ApplicationControlService\\ApplicationControlService\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{7AD98C50-C236-44DA-8B43-8CE05561D02F}|ApplicationControlService.csproj|C:\\ApplicationControlService\\ApplicationControlService\\processmonitor.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{7AD98C50-C236-44DA-8B43-8CE05561D02F}|ApplicationControlService.csproj|solutionrelative:processmonitor.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{7AD98C50-C236-44DA-8B43-8CE05561D02F}|ApplicationControlService.csproj|c:\\applicationcontrolservice\\applicationcontrolservice\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{7AD98C50-C236-44DA-8B43-8CE05561D02F}|ApplicationControlService.csproj|solutionrelative:program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{7AD98C50-C236-44DA-8B43-8CE05561D02F}|ApplicationControlService.csproj|C:\\ApplicationControlService\\ApplicationControlService\\services\\serviceconfiguration.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{7AD98C50-C236-44DA-8B43-8CE05561D02F}|ApplicationControlService.csproj|solutionrelative:services\\serviceconfiguration.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{7AD98C50-C236-44DA-8B43-8CE05561D02F}|ApplicationControlService.csproj|C:\\ApplicationControlService\\ApplicationControlService\\services\\applicationcontrolservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "AbsoluteMoniker": "D:0:0:{7AD98C50-C236-44DA-8B43-8CE05561D02F}|ApplicationControlService.csproj|c:\\applicationcontrolservice\\applicationcontrolservice\\services\\applicationcontrolservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{7AD98C50-C236-44DA-8B43-8CE05561D02F}|ApplicationControlService.csproj|solutionrelative:services\\applicationcontrolservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
@@ -23,8 +11,8 @@
       "RelativeMoniker": "D:0:0:{7AD98C50-C236-44DA-8B43-8CE05561D02F}|ApplicationControlService.csproj|solutionrelative:services\\applicationcontrolservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{7AD98C50-C236-44DA-8B43-8CE05561D02F}|ApplicationControlService.csproj|C:\\ApplicationControlService\\ApplicationControlService\\Helper\\WinApiHelper.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{7AD98C50-C236-44DA-8B43-8CE05561D02F}|ApplicationControlService.csproj|solutionrelative:Helper\\WinApiHelper.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{7AD98C50-C236-44DA-8B43-8CE05561D02F}|ApplicationControlService.csproj|C:\\ApplicationControlService\\ApplicationControlService\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{7AD98C50-C236-44DA-8B43-8CE05561D02F}|ApplicationControlService.csproj|solutionrelative:program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{7AD98C50-C236-44DA-8B43-8CE05561D02F}|ApplicationControlService.csproj|C:\\ApplicationControlService\\ApplicationControlService\\ProjectInstaller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
@@ -33,6 +21,21 @@
     {
       "AbsoluteMoniker": "D:0:0:{7AD98C50-C236-44DA-8B43-8CE05561D02F}|ApplicationControlService.csproj|C:\\ApplicationControlService\\ApplicationControlService\\projectinstaller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form",
       "RelativeMoniker": "D:0:0:{7AD98C50-C236-44DA-8B43-8CE05561D02F}|ApplicationControlService.csproj|solutionrelative:projectinstaller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{7AD98C50-C236-44DA-8B43-8CE05561D02F}|ApplicationControlService.csproj|C:\\ApplicationControlService\\ApplicationControlService\\processmonitor.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{7AD98C50-C236-44DA-8B43-8CE05561D02F}|ApplicationControlService.csproj|solutionrelative:processmonitor.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{7AD98C50-C236-44DA-8B43-8CE05561D02F}|ApplicationControlService.csproj|C:\\ApplicationControlService\\ApplicationControlService\\services\\serviceconfiguration.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{7AD98C50-C236-44DA-8B43-8CE05561D02F}|ApplicationControlService.csproj|solutionrelative:services\\serviceconfiguration.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{00000000-0000-0000-0000-000000000000}|\u003CSolution\u003E|ApplicationControlService||{04B8AB82-A572-4FEF-95CE-5222444B6B64}|"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{7AD98C50-C236-44DA-8B43-8CE05561D02F}|ApplicationControlService.csproj|C:\\ApplicationControlService\\ApplicationControlService\\Helper\\WinApiHelper.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{7AD98C50-C236-44DA-8B43-8CE05561D02F}|ApplicationControlService.csproj|solutionrelative:Helper\\WinApiHelper.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{7AD98C50-C236-44DA-8B43-8CE05561D02F}|ApplicationControlService.csproj|C:\\ApplicationControlService\\ApplicationControlService\\models\\whitelistitem.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
@@ -59,6 +62,17 @@
             {
               "$type": "Document",
               "DocumentIndex": 7,
+              "Title": "ApplicationControlService",
+              "DocumentMoniker": "C:\\ApplicationControlService\\ApplicationControlService\\ApplicationControlService.csproj",
+              "RelativeDocumentMoniker": "ApplicationControlService.csproj",
+              "ToolTip": "C:\\ApplicationControlService\\ApplicationControlService\\ApplicationControlService.csproj",
+              "RelativeToolTip": "ApplicationControlService.csproj",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001001|",
+              "WhenOpened": "2026-04-26T11:39:16.914Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
               "Title": "ProjectInstaller.cs [\u041A\u043E\u043D\u0441\u0442\u0440\u0443\u043A\u0442\u043E\u0440]",
               "DocumentMoniker": "C:\\ApplicationControlService\\ApplicationControlService\\ProjectInstaller.cs",
               "RelativeDocumentMoniker": "ProjectInstaller.cs",
@@ -69,7 +83,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 2,
+              "DocumentIndex": 6,
               "Title": "ServiceConfiguration.cs",
               "DocumentMoniker": "C:\\ApplicationControlService\\ApplicationControlService\\Services\\ServiceConfiguration.cs",
               "RelativeDocumentMoniker": "Services\\ServiceConfiguration.cs",
@@ -77,12 +91,11 @@
               "RelativeToolTip": "Services\\ServiceConfiguration.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAABQAAABGAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-12-19T20:23:48.533Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-12-19T20:23:48.533Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 4,
+              "DocumentIndex": 1,
               "Title": "ApplicationControlService.cs [\u041A\u043E\u043D\u0441\u0442\u0440\u0443\u043A\u0442\u043E\u0440]",
               "DocumentMoniker": "C:\\ApplicationControlService\\ApplicationControlService\\Services\\ApplicationControlService.cs",
               "RelativeDocumentMoniker": "Services\\ApplicationControlService.cs",
@@ -94,57 +107,56 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 5,
+              "DocumentIndex": 8,
               "Title": "WinApiHelper.cs",
               "DocumentMoniker": "C:\\ApplicationControlService\\ApplicationControlService\\Helper\\WinApiHelper.cs",
               "RelativeDocumentMoniker": "Helper\\WinApiHelper.cs",
               "ToolTip": "C:\\ApplicationControlService\\ApplicationControlService\\Helper\\WinApiHelper.cs",
               "RelativeToolTip": "Helper\\WinApiHelper.cs",
-              "ViewState": "AgIAACECAAAAAAAAAAAEwEMCAAAgAAAAAAAAAA==",
+              "ViewState": "AgIAAGsAAAAAAAAAAADwv/cCAAAJAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2025-12-10T13:44:17.471Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 3,
+              "DocumentIndex": 0,
               "Title": "ApplicationControlService.cs",
               "DocumentMoniker": "C:\\ApplicationControlService\\ApplicationControlService\\Services\\ApplicationControlService.cs",
               "RelativeDocumentMoniker": "Services\\ApplicationControlService.cs",
               "ToolTip": "C:\\ApplicationControlService\\ApplicationControlService\\Services\\ApplicationControlService.cs",
               "RelativeToolTip": "Services\\ApplicationControlService.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAGkAAAAQAAAAAAAAAA==",
+              "ViewState": "AgIAAA0BAAAAAAAAAAAuwDkBAAAJAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2025-12-10T12:25:55.084Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 0,
+              "DocumentIndex": 5,
               "Title": "ProcessMonitor.cs",
               "DocumentMoniker": "C:\\ApplicationControlService\\ApplicationControlService\\ProcessMonitor.cs",
               "RelativeDocumentMoniker": "ProcessMonitor.cs",
               "ToolTip": "C:\\ApplicationControlService\\ApplicationControlService\\ProcessMonitor.cs",
               "RelativeToolTip": "ProcessMonitor.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAADYAAABGAAAAAAAAAA==",
+              "ViewState": "AgIAALsEAAAAAAAAAAAAAA8AAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-12-10T12:04:18.869Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-12-10T12:04:18.869Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 6,
+              "DocumentIndex": 3,
               "Title": "ProjectInstaller.cs",
               "DocumentMoniker": "C:\\ApplicationControlService\\ApplicationControlService\\ProjectInstaller.cs",
               "RelativeDocumentMoniker": "ProjectInstaller.cs",
               "ToolTip": "C:\\ApplicationControlService\\ApplicationControlService\\ProjectInstaller.cs",
               "RelativeToolTip": "ProjectInstaller.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAACEAAAABAAAAAAAAAA==",
+              "ViewState": "AgIAAAMAAAAAAAAAAAAAACEAAAABAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2025-12-10T11:30:35.593Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 8,
+              "DocumentIndex": 9,
               "Title": "WhiteListItem.cs",
               "DocumentMoniker": "C:\\ApplicationControlService\\ApplicationControlService\\Models\\WhiteListItem.cs",
               "RelativeDocumentMoniker": "Models\\WhiteListItem.cs",
@@ -156,13 +168,13 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 1,
+              "DocumentIndex": 2,
               "Title": "Program.cs",
               "DocumentMoniker": "C:\\ApplicationControlService\\ApplicationControlService\\Program.cs",
               "RelativeDocumentMoniker": "Program.cs",
               "ToolTip": "C:\\ApplicationControlService\\ApplicationControlService\\Program.cs",
               "RelativeToolTip": "Program.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAGQAAAAVAAAAAAAAAA==",
+              "ViewState": "AgIAABUCAAAAAAAAAAAUwDMCAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2025-12-10T11:18:34.747Z",
               "EditorCaption": ""

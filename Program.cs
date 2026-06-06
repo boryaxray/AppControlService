@@ -12,27 +12,26 @@ namespace ApplicationControlService
     {
         static int Main(string[] args)
         {
+            // Если это запуск как служба (с параметрами из реестра)
+            if (args.Length == 0 || (args.Length > 0 && !args[0].StartsWith("--")))
+            {
+                // Запуск как служба Windows
+                ServiceBase.Run(new ApplicationControlService());
+                return 0;
+            }
+
             // Режим отладки
             if (args.Length > 0 && args[0] == "--debug")
             {
                 return RunDebugMode(args);
             }
 
-            // Обработка команд
+            // Обработка команд установки/удаления
             if (args.Length > 0)
             {
                 return ProcessArguments(args);
             }
-            AppDomain.CurrentDomain.UnhandledException += (s, e) =>
-            {
-                Environment.ExitCode = -1;
-                Environment.FailFast(
-                    "Unhandled exception",
-                    e.ExceptionObject as Exception
-                );
-            };
-            // Запуск как служба
-            ServiceBase.Run(new ApplicationControlService());
+
             return 0;
         }
 
@@ -75,7 +74,7 @@ namespace ApplicationControlService
 
         static int RunDebugMode(string[] args)
         {
-            Console.WriteLine(" Application Control Service - Debug Mode ");
+            Console.WriteLine("=== Application Control Service - Debug Mode ===");
 
             string logsPath = args.Length > 1 ? args[1] : null;
             string whiteListPath = args.Length > 2 ? args[2] : null;
@@ -100,142 +99,12 @@ namespace ApplicationControlService
 
             return 0;
         }
-
-        //        static bool InstallService(string logsPath = null, string whiteListPath = null)
-        //        {
-        //            try
-        //            {
-        //                if (!IsRunningAsAdministrator())
-        //                {
-        //                    Console.WriteLine("Требуются права администратора для установки службы.");
-        //                    Console.WriteLine("Перезапускаем с правами администратора...");
-        //                    return RestartAsAdministrator("--install", logsPath, whiteListPath);
-        //                }
-
-        //                string exePath = Assembly.GetExecutingAssembly().Location;
-        //              /*  exePath = exePath.Trim('"');
-        //*/
-        //                // Используем переданные пути или по умолчанию
-        //                if (string.IsNullOrEmpty(logsPath))
-        //                    logsPath = @"C:\ProgramData\AppControl\Logs";
-
-        //                if (string.IsNullOrEmpty(whiteListPath))
-        //                    whiteListPath = @"C:\ProgramData\AppControl\WhiteList";
-
-        //                logsPath = logsPath.Trim('"');
-        //                whiteListPath = whiteListPath.Trim('"');
-
-        //                Console.WriteLine($"Установка службы:");
-        //                Console.WriteLine($"  EXE: {exePath}");
-        //                Console.WriteLine($"  Логи: {logsPath}");
-        //                Console.WriteLine($"  Белый список: {whiteListPath}");
-
-        //                // Создаем директории
-        //                if (!Directory.Exists(logsPath))
-        //                {
-        //                    Directory.CreateDirectory(logsPath);
-        //                    Console.WriteLine($"Создана директория для логов: {logsPath}");
-        //                }
-
-        //                if (!Directory.Exists(whiteListPath))
-        //                {
-        //                    Directory.CreateDirectory(whiteListPath);
-        //                    Console.WriteLine($"Создана директория для белого списка: {whiteListPath}");
-        //                }
-
-        //                // Создаем конфиг если нет
-        //                string configPath = Path.Combine(whiteListPath, "config.json");
-        //                if (!File.Exists(configPath))
-        //                {
-        //                    CreateSimpleConfig(configPath);
-        //                    Console.WriteLine($"Создан конфиг по умолчанию: {configPath}");
-        //                }
-
-        //                string binPath = $"\"{exePath}\" {logsPath} {whiteListPath}";
-
-        //                // Ключевое исправление: правильный формат команды
-        //                string createCommand = $"create AppControlService binPath= \"{binPath}\" start= auto DisplayName= \"Application Control Service\"";
-
-        //                Console.WriteLine($"\nСоздание службы: sc.exe {createCommand}");
-
-        //                bool serviceCreated = false;
-        //                if (RunSCCommand(createCommand, "создание службы"))
-        //                {
-        //                    serviceCreated = true;
-        //                }
-        //                else
-        //                {
-        //                    // Альтернативный вариант 
-        //                    string createCommandAlt = $"create AppControlService binPath= \"{exePath} {logsPath} {whiteListPath}\" start= auto DisplayName= \"Application Control Service\"";
-        //                    Console.WriteLine($"\nАльтернативный вариант: sc.exe {createCommandAlt}");
-
-        //                    if (RunSCCommand(createCommandAlt, "создание службы (альтернатива)"))
-        //                    {
-        //                        serviceCreated = true;
-        //                    }
-        //                }
-
-        //                if (!serviceCreated)
-        //                {
-        //                    Console.WriteLine("Не удалось создать службу");
-        //                    return false;
-        //                }
-
-        //                Console.WriteLine("Служба успешно создана");
-
-        //                // Задаем описание службы
-        //                string descriptionCommand = $"description AppControlService \"Служба контроля запуска приложений\"";
-        //                RunSCCommand(descriptionCommand, "назначение описания");
-
-        //                // Устанавливаем тип восстановления
-        //                string failureCommand = $"failure AppControlService reset= 86400 actions= restart/5000/restart/5000/restart/5000";
-        //                RunSCCommand(failureCommand, "настройка восстановления");
-
-        //                // Сохраняем параметры в реестр (на всякий случай)
-        //                SetServiceParametersViaRegistry(logsPath, whiteListPath);
-
-        //                Thread.Sleep(2000);
-
-        //                // Запускаем службу
-        //                Console.WriteLine("\nЗапуск службы...");
-        //                if (StartService())
-        //                {
-        //                    Console.WriteLine(" Служба успешно запущена!");
-
-        //                    // Ждем и проверяем статус
-        //                    Thread.Sleep(3000);
-        //                    RunSCCommand("query AppControlService", "проверка статуса службы");
-
-        //                    return true;
-        //                }
-        //                else
-        //                {
-        //                    Console.WriteLine("Служба создана, но не запущена автоматически.");
-        //                    Console.WriteLine("Попробуйте запустить вручную:");
-        //                    Console.WriteLine("  sc start AppControlService");
-
-        //                    // Все равно считаем успехом, т.к. служба создана
-        //                    return true;
-        //                }
-        //            }
-        //            catch (Exception ex)
-        //            {
-        //                Console.WriteLine($"Ошибка при установке: {ex.Message}");
-        //                Console.WriteLine($"StackTrace: {ex.StackTrace}");
-        //                return false;
-        //            }
-        //        }
-
         static bool InstallService(string logsPath = null, string whiteListPath = null)
         {
             try
             {
                 Console.WriteLine("=== УСТАНОВКА СЛУЖБЫ AppControlService ===");
-                if (!EventLog.SourceExists("AppControlService"))
-                {
-                    EventLog.CreateEventSource("AppControlService", "Application");
-                }
-                // Проверка прав
+
                 if (!IsRunningAsAdministrator())
                 {
                     Console.WriteLine("Требуются права администратора!");
@@ -271,73 +140,39 @@ namespace ApplicationControlService
                     File.WriteAllText(configPath, "[]", Encoding.UTF8);
                     Console.WriteLine($"✓ Конфиг создан: {configPath}");
                 }
-                else
-                {
-                    Console.WriteLine($"✓ Конфиг уже существует: {configPath}");
-                }
 
-                // 1. УДАЛЯЕМ старую службу (если есть)
+                // Удаляем старую службу
                 Console.WriteLine("\n1. Удаление старой службы...");
                 try
                 {
                     RunSCCommand("stop AppControlService", "остановка");
-                    Thread.Sleep(1000);
+                    Thread.Sleep(2000);
                 }
                 catch { }
 
                 try
                 {
                     RunSCCommand("delete AppControlService", "удаление");
-                    Thread.Sleep(1000);
+                    Thread.Sleep(2000);
                 }
                 catch { }
 
-                // 2. СОЗДАЕМ службу (ПРОСТАЯ команда)
+                // Создаем службу с параметрами
                 Console.WriteLine("\n2. Создание службы...");
 
-                // Простейший вариант команды
-                string binPath = $"\"{exePath}\" \"{logsPath}\" \"{whiteListPath}\"";
-                string createCmd = $"create AppControlService binPath= {binPath} start= auto";
+                // Важно: БЕЗ кавычек для аргументов при создании службы
+                string binPath = $"\"{exePath}\"";
+                string createCmd = $"create AppControlService binPath= {binPath} start= auto type= own";
 
-                Console.WriteLine($"Выполняем: sc.exe {createCmd}");
-
+                // Добавляем параметры как отдельную команду
                 if (!RunSCCommand(createCmd, "создание"))
                 {
-                    // Пробуем альтернативный вариант
-                    Console.WriteLine("\nПробуем альтернативный вариант...");
-                    string createCmdAlt = $"create AppControlService binPath= \"{exePath}\" start= auto";
-
-                    if (!RunSCCommand(createCmdAlt, "создание (альтернатива)"))
-                    {
-                        Console.WriteLine("✗ Не удалось создать службу");
-                        return false;
-                    }
+                    Console.WriteLine("✗ Не удалось создать службу");
+                    return false;
                 }
 
-                Console.WriteLine("✓ Служба создана");
-
-                // 3. Добавляем описание
-                Console.WriteLine("\n3. Настройка службы...");
-                RunSCCommand($"description AppControlService \"Контроль запуска приложений\"", "описание");
-                // 3.1 НАСТРОЙКА САМОВОССТАНОВЛЕНИЯ (CRITICAL)
-                Console.WriteLine("\n3.1 Настройка самовосстановления службы...");
-                RunSCCommand(
-                    "failure AppControlService reset= 0 actions= restart/5000/restart/5000/restart/5000",
-                    "настройка восстановления"
-                );
-
-                RunSCCommand(
-                    "failureflag AppControlService 1",
-                    "включение восстановления при аварийном завершении"
-                );
-
-                // Устанавливаем тип запуска АВТОМАТИЧЕСКИЙ
-                RunSCCommand($"config AppControlService start= auto", "автозапуск");
-
-                // Показываем информацию
-                RunSCCommand($"qc AppControlService", "информация");
-
-                // Сохраняем пути в реестр
+                // Сохраняем параметры в реестре ДО запуска службы
+                Console.WriteLine("\n3. Сохранение параметров в реестре...");
                 try
                 {
                     string regPath = @"SYSTEM\CurrentControlSet\Services\AppControlService\Parameters";
@@ -345,6 +180,7 @@ namespace ApplicationControlService
                     {
                         key.SetValue("LogsPath", logsPath);
                         key.SetValue("WhiteListPath", whiteListPath);
+                        key.SetValue("ImagePath", exePath);
                         Console.WriteLine("✓ Параметры сохранены в реестре");
                     }
                 }
@@ -353,69 +189,371 @@ namespace ApplicationControlService
                     Console.WriteLine($"⚠ Не удалось сохранить в реестр: {regEx.Message}");
                 }
 
+                // Настройка автозапуска
+                Console.WriteLine("\n4. Настройка автозапуска...");
+                ConfigureAutoStart();
+
+                // Настройка восстановления
+                Console.WriteLine("\n5. Настройка самовосстановления...");
+                ConfigureRecoveryViaRegistry();
+
+                // Скрываем службу
+                Console.WriteLine("\n6. Скрытие службы...");
+                HideServiceInRegistry();
+
+                // Запускаем службу
+                Console.WriteLine("\n7. Запуск службы...");
                 Thread.Sleep(2000);
 
-                // 4. ЗАПУСКАЕМ службу
-                Console.WriteLine("\n4. Запуск службы...");
                 if (RunSCCommand("start AppControlService", "запуск"))
                 {
                     Console.WriteLine("✓ Служба запущена!");
-
-                    // Проверяем статус
                     Thread.Sleep(3000);
-                    Console.WriteLine("\n5. Проверка статуса...");
                     RunSCCommand("query AppControlService", "статус");
-
                     return true;
                 }
                 else
                 {
                     Console.WriteLine("⚠ Служба создана, но не запущена");
-                    Console.WriteLine("\nПопробуйте запустить вручную:");
-                    Console.WriteLine("  sc start AppControlService");
-                    Console.WriteLine("\nИли проверьте ошибки в Event Viewer");
-
                     return false;
                 }
             }
             catch (Exception ex)
             {
                 Console.WriteLine($"✗ Критическая ошибка: {ex.Message}");
-                Console.WriteLine($"StackTrace: {ex.StackTrace}");
                 return false;
             }
         }
+
+        private static void ConfigureAutoStart()
+        {
+            try
+            {
+                string servicePath = @"SYSTEM\CurrentControlSet\Services\AppControlService";
+
+                using (var key = Microsoft.Win32.Registry.LocalMachine.OpenSubKey(servicePath, true))
+                {
+                    if (key != null)
+                    {
+                        // Start = 2 (Automatic)
+                        key.SetValue("Start", 2, Microsoft.Win32.RegistryValueKind.DWord);
+
+                        // DelayedAutoStart = 0 (не отложенный)
+                        key.SetValue("DelayedAutoStart", 0, Microsoft.Win32.RegistryValueKind.DWord);
+
+                        // ErrorControl = 1 (Normal)
+                        key.SetValue("ErrorControl", 1, Microsoft.Win32.RegistryValueKind.DWord);
+
+                        Console.WriteLine("  ✓ Тип запуска: Автоматический");
+                    }
+                }
+
+                // Дополнительная проверка через sc.exe
+                RunSCCommand("config AppControlService start= auto", "настройка автозапуска");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"  ⚠ Ошибка настройки автозапуска: {ex.Message}");
+            }
+        }
+
+        private static void HideServiceInRegistry()
+        {
+            try
+            {
+                string servicePath = @"SYSTEM\CurrentControlSet\Services\AppControlService";
+
+                using (var key = Microsoft.Win32.Registry.LocalMachine.OpenSubKey(servicePath, true))
+                {
+                    if (key != null)
+                    {
+                        // Type = 0x10 (Win32OwnProcess) - это стандартный тип, не скрывает
+                        // Но оставляем рабочим
+                        key.SetValue("Type", 16, Microsoft.Win32.RegistryValueKind.DWord);
+                        Console.WriteLine("  ✓ Конфигурация службы сохранена");
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"  ⚠ Ошибка: {ex.Message}");
+            }
+        }
+
+        /*private static void ProtectRegistryKey()
+        {
+            try
+            {
+                // Устанавливаем права только для SYSTEM
+                Process process = new Process();
+                process.StartInfo.FileName = "cmd.exe";
+                process.StartInfo.Arguments = $"/c icacls \"HKLM\\SYSTEM\\CurrentControlSet\\Services\\AppControlService\" /inheritance:r /grant:r \"SYSTEM:(OI)(CI)F\" /grant:r \"Administrators:(OI)(CI)F\" /deny Everyone:(OI)(CI)WD";
+                process.StartInfo.UseShellExecute = false;
+                process.StartInfo.CreateNoWindow = true;
+                process.StartInfo.Verb = "runas";
+
+                process.Start();
+                process.WaitForExit(5000);
+
+                Console.WriteLine("  ✓ Права реестра настроены");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"  ⚠ Ошибка защиты реестра: {ex.Message}");
+            }
+        }*/
+
+        // восстановление через реестр
+        /* private static void ConfigureRecoveryViaRegistry()
+         {
+             try
+             {
+                 string servicePath = @"SYSTEM\CurrentControlSet\Services\AppControlService";
+
+                 using (var key = Microsoft.Win32.Registry.LocalMachine.OpenSubKey(servicePath, true))
+                 {
+                     if (key != null)
+                     {
+                         // 1. Устанавливаем автоматический запуск (Start = 2)
+                         key.SetValue("Start", 2, Microsoft.Win32.RegistryValueKind.DWord);
+
+                         // 2. Устанавливаем ErrorControl = 1 (Normal)
+                         // 0 = Ignore, 1 = Normal, 2 = Severe, 3 = Critical
+                         key.SetValue("ErrorControl", 1, Microsoft.Win32.RegistryValueKind.DWord);
+
+                         // 3. Структура FailureActions для НЕМЕДЛЕННОГО перезапуска
+                         // Формат бинарных данных:
+                         // DWORD dwResetPeriod;    // Через сколько сбросить счетчик (сек)
+                         // DWORD dwRebootMsg;      // Сообщение при перезагрузке
+                         // DWORD dwCommand;        // Команда при сбое
+                         // DWORD cActions;         // Количество действий
+                         // SC_ACTION actions[];    // Массив действий
+                         //   SC_ACTION:
+                         //     DWORD Type;          // 0=None, 1=Restart, 2=Reboot, 3=RunCommand
+                         //     DWORD Delay;         // Задержка в мс
+
+                         byte[] failureActions = new byte[]
+                         {
+                     // Version (зарезервировано)
+                     0x00, 0x00, 0x00, 0x00,
+
+                     // ResetPeriod: 86400 секунд = 24 часа (сброс счетчика)
+                     0x00, 0x00, 0x01, 0x00,
+
+                     // RebootMessage (не используется)
+                     0x00, 0x00, 0x00, 0x00,
+
+                     // Command (не используется)
+                     0x00, 0x00, 0x00, 0x00,
+
+                     // Количество действий: 3
+                     0x03, 0x00, 0x00, 0x00,
+
+                     // Действие 1: SC_ACTION_RESTART (1) через 1000 мс
+                     0x01, 0x00, 0x00, 0x00,  // Type: Restart
+                     0xE8, 0x03, 0x00, 0x00,  // Delay: 1000 ms
+
+                     // Действие 2: SC_ACTION_RESTART (1) через 1000 мс
+                     0x01, 0x00, 0x00, 0x00,  // Type: Restart
+                     0xE8, 0x03, 0x00, 0x00,  // Delay: 1000 ms
+
+                     // Действие 3: SC_ACTION_RESTART (1) через 1000 мс
+                     0x01, 0x00, 0x00, 0x00,  // Type: Restart
+                     0xE8, 0x03, 0x00, 0x00   // Delay: 1000 ms
+                         };
+
+                         key.SetValue("FailureActions", failureActions, Microsoft.Win32.RegistryValueKind.Binary);
+                         Console.WriteLine("   ✓ FailureActions записаны в реестр");
+
+                         // 4. ВАЖНО: Включаем восстановление для ВСЕХ типов завершения
+                         // 1 = Включить восстановление даже если служба завершилась без ошибки
+                         key.SetValue("FailureActionsOnNonCrashFailures", 1, Microsoft.Win32.RegistryValueKind.DWord);
+                         Console.WriteLine("   ✓ FailureActionsOnNonCrashFailures = 1 (восстановление при любом завершении)");
+
+                         // 5. Защищаем от отключения восстановления
+                         key.SetValue("DelayedAutoStart", 1, Microsoft.Win32.RegistryValueKind.DWord);
+
+                         Console.WriteLine("   ✓ Все параметры восстановления записаны в реестр");
+                     }
+                     else
+                     {
+                         Console.WriteLine("   ✗ Не удалось открыть ключ реестра службы");
+                     }
+                 }
+             }
+             catch (Exception ex)
+             {
+                 Console.WriteLine($"   ✗ Ошибка записи в реестр: {ex.Message}");
+
+                 // Пробуем через командную строку
+                 try
+                 {
+                     string cmd = @"reg add ""HKLM\SYSTEM\CurrentControlSet\Services\AppControlService"" /v FailureActionsOnNonCrashFailures /t REG_DWORD /d 1 /f";
+                     Process.Start("cmd.exe", $"/c {cmd}").WaitForExit(5000);
+                     Console.WriteLine("   ✓ Параметры записаны через reg.exe");
+                 }
+                 catch { }
+             }
+         }*/
+        private static void ConfigureRecoveryViaRegistry()
+        {
+            try
+            {
+                string servicePath = @"SYSTEM\CurrentControlSet\Services\AppControlService";
+
+                using (var key = Microsoft.Win32.Registry.LocalMachine.OpenSubKey(servicePath, true))
+                {
+                    if (key != null)
+                    {
+                        // FailureActions - 3 попытки перезапуска с интервалом 1000 мс
+                        byte[] failureActions = new byte[]
+                        {
+                            0x00, 0x00, 0x00, 0x00,  // Reset period (0 = never reset)
+                            0x00, 0x00, 0x00, 0x00,  // Reboot message
+                            0x00, 0x00, 0x00, 0x00,  // Command
+                            0x03, 0x00, 0x00, 0x00,  // 3 actions
+                            0x01, 0x00, 0x00, 0x00,  // Action 1: Restart
+                            0xE8, 0x03, 0x00, 0x00,  // Delay: 1000 ms
+                            0x01, 0x00, 0x00, 0x00,  // Action 2: Restart
+                            0xE8, 0x03, 0x00, 0x00,  // Delay: 1000 ms
+                            0x01, 0x00, 0x00, 0x00,  // Action 3: Restart
+                            0xE8, 0x03, 0x00, 0x00   // Delay: 1000 ms
+                        };
+
+                        key.SetValue("FailureActions", failureActions, Microsoft.Win32.RegistryValueKind.Binary);
+                        key.SetValue("FailureActionsOnNonCrashFailures", 1, Microsoft.Win32.RegistryValueKind.DWord);
+
+                        Console.WriteLine("  ✓ Восстановление настроено: 3 попытки через 1 секунду");
+                    }
+                }
+
+                // Дублируем через sc.exe для надежности
+                RunSCCommand("failure AppControlService reset= 86400 actions= restart/1000/restart/1000/restart/1000", "настройка восстановления");
+                RunSCCommand("failureflag AppControlService 1", "включение восстановления");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($" Ошибка настройки восстановления: {ex.Message}");
+            }
+        }
+
+
+        private static void ConfigureRecoveryViaPowerShell()
+        {
+            try
+            {
+                // PowerShell команда для настройки восстановления службы
+                string psCommand = @"
+                    $service = Get-WmiObject Win32_Service -Filter ""Name='AppControlService'""
+                    if ($service) {
+                        # Устанавливаем автоматический запуск
+                        $service.ChangeStartMode('Automatic')
+    
+                        # Настраиваем восстановление
+                        sc.exe failure AppControlService reset= 86400 actions= restart/1000/restart/1000/restart/1000
+                        sc.exe failureflag AppControlService 1
+    
+                        Write-Output 'Service recovery configured'
+                    }";
+
+                // Сохраняем в временный файл
+                string tempFile = Path.GetTempFileName() + ".ps1";
+                File.WriteAllText(tempFile, psCommand);
+
+                Process process = new Process();
+                process.StartInfo.FileName = "powershell.exe";
+                process.StartInfo.Arguments = $"-ExecutionPolicy Bypass -File \"{tempFile}\"";
+                process.StartInfo.UseShellExecute = false;
+                process.StartInfo.CreateNoWindow = true;
+                process.StartInfo.RedirectStandardOutput = true;
+
+                process.Start();
+                string output = process.StandardOutput.ReadToEnd();
+                process.WaitForExit(10000);
+
+                Console.WriteLine($"   ✓ PowerShell: {output.Trim()}");
+
+                // Удаляем временный файл
+                try { File.Delete(tempFile); } catch { }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"   ⚠ Ошибка PowerShell: {ex.Message}");
+            }
+        }
+
+
+
+
+        private static void ConfigureServiceRecovery()
+        {
+            try
+            {
+                Console.WriteLine("\n=== НАСТРОЙКА АВТОМАТИЧЕСКОГО ВОССТАНОВЛЕНИЯ СЛУЖБЫ ===");
+                Console.WriteLine("Служба будет автоматически перезапущена при любом завершении!\n");
+
+                // Способ 1: Настройка через sc.exe (самый надежный)
+                Console.WriteLine("1. Настройка через SCM (Service Control Manager)...");
+
+                // Команда: при падении службы перезапускать её 3 раза с интервалом 5 секунд
+                string failureCommand = "failure AppControlService reset= 86400 actions= restart/5000/restart/5000/restart/5000";
+
+                if (RunSCCommand(failureCommand, "настройка восстановления"))
+                {
+                    Console.WriteLine("   ✓ Восстановление настроено: 3 попытки перезапуска с интервалом 5 сек");
+                }
+                else
+                {
+                    Console.WriteLine("   ✗ Ошибка настройки через sc.exe");
+                }
+
+                // Включаем восстановление для всех типов завершения (включая kill процесса)
+                string failureFlagCommand = "failureflag AppControlService 1";
+                if (RunSCCommand(failureFlagCommand, "включение восстановления"))
+                {
+                    Console.WriteLine("   ✓ Восстановление включено для всех типов сбоев");
+                }
+
+                // Способ 2: Дублируем настройки через реестр (более детально)
+                Console.WriteLine("\n2. Настройка через реестр Windows...");
+                ConfigureRecoveryViaRegistry();
+
+                // Способ 3: Настройка через PowerShell для гарантии
+                Console.WriteLine("\n3. Дополнительная настройка через PowerShell...");
+                ConfigureRecoveryViaPowerShell();
+
+                // Проверяем что всё применилось
+                Console.WriteLine("\n4. Проверка настроек восстановления...");
+                RunSCCommand("qfailure AppControlService", "проверка настроек");
+
+                Console.WriteLine("\n✓ АВТОВОССТАНОВЛЕНИЕ ПОЛНОСТЬЮ НАСТРОЕНО!");
+                Console.WriteLine("  - Служба будет перезапущена при любом завершении");
+                Console.WriteLine("  - 3 попытки восстановления с интервалом 5 секунд");
+                Console.WriteLine("  - Счетчик сбоев сбрасывается через 24 часа");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Ошибка настройки восстановления: {ex.Message}");
+            }
+        }
+
         static bool UninstallService()
         {
             try
             {
-                // Проверяем права администратора
                 if (!IsRunningAsAdministrator())
                 {
                     Console.WriteLine("Требуются права администратора для удаления службы.");
-                    Console.WriteLine("Перезапускаем с правами администратора...");
-
                     return RestartAsAdministrator("--uninstall");
                 }
 
                 Console.WriteLine("Удаление службы...");
+                RunSCCommand("stop AppControlService", "остановка");
+                Thread.Sleep(2000);
+                RunSCCommand("delete AppControlService", "удаление");
 
-                // Останавливаем службу перед удалением
-                Console.WriteLine("Остановка службы...");
-                StopService();
-
-                // Ждем остановки
-                Thread.Sleep(3000);
-
-                // Удаляем службу
-                string deleteCommand = "delete AppControlService";
-                if (RunSCCommand(deleteCommand, "удаление службы"))
-                {
-                    Console.WriteLine("Служба успешно удалена!");
-                    return true;
-                }
-
-                return false;
+                Console.WriteLine("Служба успешно удалена!");
+                return true;
             }
             catch (Exception ex)
             {
@@ -424,43 +562,20 @@ namespace ApplicationControlService
             }
         }
 
+
         static bool StartService()
         {
-            try
-            {
-                return RunSCCommand("start AppControlService", "запуск службы");
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Ошибка: {ex.Message}");
-                return false;
-            }
+            return RunSCCommand("start AppControlService", "запуск службы");
         }
 
         static bool StopService()
         {
-            try
-            {
-                return RunSCCommand("stop AppControlService", "остановка службы");
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Ошибка: {ex.Message}");
-                return false;
-            }
+            return RunSCCommand("stop AppControlService", "остановка службы");
         }
 
         static bool CheckServiceStatus()
         {
-            try
-            {
-                return RunSCCommand("query AppControlService", "проверка статуса службы");
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Ошибка: {ex.Message}");
-                return false;
-            }
+            return RunSCCommand("query AppControlService", "проверка статуса службы");
         }
 
         //static bool RunSCCommand(string arguments, string operationName)
@@ -582,11 +697,8 @@ namespace ApplicationControlService
                 process.BeginOutputReadLine();
                 process.BeginErrorReadLine();
 
-                process.WaitForExit(15000); // 15 секунд
+                process.WaitForExit(15000);
 
-                Console.WriteLine($"  Код выхода: {process.ExitCode}");
-
-                // Коды успеха для sc.exe
                 if (process.ExitCode == 0 || process.ExitCode == 1073 || output.ToString().Contains("SUCCESS"))
                 {
                     Console.WriteLine($"  ✓ {operationName} - УСПЕШНО");
@@ -631,12 +743,8 @@ namespace ApplicationControlService
                     UseShellExecute = true
                 };
 
-                Process process = new Process();
-                process.StartInfo = startInfo;
-                process.Start();
-                process.WaitForExit(30000);
-
-                return process.ExitCode == 0;
+                Process.Start(startInfo);
+                return true;
             }
             catch (Exception ex)
             {
@@ -644,5 +752,8 @@ namespace ApplicationControlService
                 return false;
             }
         }
+
+
+
     }
 }
