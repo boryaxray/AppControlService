@@ -3,7 +3,7 @@
 public class ServiceConfiguration
 {
     // Раздельные пути
-    public string LogsDirectory { get; set; }
+    public  string LogsDirectory { get; set; }
     public string WhiteListDirectory { get; set; }
     public string ConfigPath { get; set; }
     public string DetailedLogPath { get; set; }

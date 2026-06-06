@@ -1235,7 +1235,7 @@ namespace ApplicationControlService
 
         public override string ToString()
         {
-            return $"Статус: {(IsRunning ? "Активен" : "Остановлен")}, " +
+            return $"Статус: {(IsRunning ? "Активен" : "Остановлен ")}, " +
                    $"Разрешено: {AllowedApplicationsCount}, " +
                    $"Проверено: {VerifiedProcessesCount}, " +
                    $"Логи: {LogsDirectory}, " +

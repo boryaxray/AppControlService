@@ -116,6 +116,7 @@ namespace ApplicationControlService
             public IntPtr WriteTransferCount;
             public IntPtr OtherTransferCount;
         }
+         
 
         // Структура UNICODE_STRING
         [StructLayout(LayoutKind.Sequential)]

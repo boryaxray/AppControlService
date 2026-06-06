@@ -270,7 +270,7 @@ namespace ApplicationControlService
 
             if (powerStatus == PowerBroadcastStatus.ResumeSuspend)
             {
-                LogService("Выход из сна, проверяем монитор...");
+                LogService("Выход из сна, проверяем монитор... ");
                 if (_monitor == null)
                 {
                     StartMonitor();

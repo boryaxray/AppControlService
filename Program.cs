@@ -552,7 +552,7 @@ namespace ApplicationControlService
                 Thread.Sleep(2000);
                 RunSCCommand("delete AppControlService", "удаление");
 
-                Console.WriteLine("Служба успешно удалена!");
+                Console.WriteLine("Служба успешно удалена! ");
                 return true;
             }
             catch (Exception ex)

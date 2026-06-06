@@ -4,7 +4,7 @@ using System.Runtime.Serialization;
 
 namespace ApplicationControlService.Models
 {
-    [DataContract]
+    [DataContract] 
     public class WhiteListItem
     {
         [DataMember(Name = "Name")]
