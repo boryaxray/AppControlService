@@ -1,28 +1,50 @@
 {
   "Version": 1,
-  "WorkspaceRootPath": "C:\\ApplicationControlService\\ApplicationControlService\\",
+  "WorkspaceRootPath": "C:\\GITT\\AppControlService\\",
   "Documents": [
     {
+<<<<<<< HEAD
       "AbsoluteMoniker": "D:0:0:{7AD98C50-C236-44DA-8B43-8CE05561D02F}|ApplicationControlService.csproj|c:\\applicationcontrolservice\\applicationcontrolservice\\services\\applicationcontrolservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{7AD98C50-C236-44DA-8B43-8CE05561D02F}|ApplicationControlService.csproj|solutionrelative:services\\applicationcontrolservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+=======
+      "AbsoluteMoniker": "D:0:0:{7AD98C50-C236-44DA-8B43-8CE05561D02F}|ApplicationControlService.csproj|c:\\gitt\\appcontrolservice\\processmonitor.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{7AD98C50-C236-44DA-8B43-8CE05561D02F}|ApplicationControlService.csproj|solutionrelative:processmonitor.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{7AD98C50-C236-44DA-8B43-8CE05561D02F}|ApplicationControlService.csproj|C:\\ApplicationControlService\\ApplicationControlService\\services\\applicationcontrolservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form",
-      "RelativeMoniker": "D:0:0:{7AD98C50-C236-44DA-8B43-8CE05561D02F}|ApplicationControlService.csproj|solutionrelative:services\\applicationcontrolservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{7AD98C50-C236-44DA-8B43-8CE05561D02F}|ApplicationControlService.csproj|C:\\ApplicationControlService\\ApplicationControlService\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "AbsoluteMoniker": "D:0:0:{7AD98C50-C236-44DA-8B43-8CE05561D02F}|ApplicationControlService.csproj|C:\\GITT\\AppControlService\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{7AD98C50-C236-44DA-8B43-8CE05561D02F}|ApplicationControlService.csproj|solutionrelative:program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{7AD98C50-C236-44DA-8B43-8CE05561D02F}|ApplicationControlService.csproj|C:\\ApplicationControlService\\ApplicationControlService\\ProjectInstaller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "AbsoluteMoniker": "D:0:0:{7AD98C50-C236-44DA-8B43-8CE05561D02F}|ApplicationControlService.csproj|C:\\GITT\\AppControlService\\services\\serviceconfiguration.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{7AD98C50-C236-44DA-8B43-8CE05561D02F}|ApplicationControlService.csproj|solutionrelative:services\\serviceconfiguration.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{7AD98C50-C236-44DA-8B43-8CE05561D02F}|ApplicationControlService.csproj|C:\\GITT\\AppControlService\\services\\applicationcontrolservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+>>>>>>> 25ba646659ff9c6fd6a7c0f95f990965489d6d14
+      "RelativeMoniker": "D:0:0:{7AD98C50-C236-44DA-8B43-8CE05561D02F}|ApplicationControlService.csproj|solutionrelative:services\\applicationcontrolservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{7AD98C50-C236-44DA-8B43-8CE05561D02F}|ApplicationControlService.csproj|C:\\GITT\\AppControlService\\services\\applicationcontrolservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form",
+      "RelativeMoniker": "D:0:0:{7AD98C50-C236-44DA-8B43-8CE05561D02F}|ApplicationControlService.csproj|solutionrelative:services\\applicationcontrolservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form"
+    },
+    {
+<<<<<<< HEAD
+      "AbsoluteMoniker": "D:0:0:{7AD98C50-C236-44DA-8B43-8CE05561D02F}|ApplicationControlService.csproj|C:\\ApplicationControlService\\ApplicationControlService\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{7AD98C50-C236-44DA-8B43-8CE05561D02F}|ApplicationControlService.csproj|solutionrelative:program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+=======
+      "AbsoluteMoniker": "D:0:0:{7AD98C50-C236-44DA-8B43-8CE05561D02F}|ApplicationControlService.csproj|C:\\GITT\\AppControlService\\Helper\\WinApiHelper.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{7AD98C50-C236-44DA-8B43-8CE05561D02F}|ApplicationControlService.csproj|solutionrelative:Helper\\WinApiHelper.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+>>>>>>> 25ba646659ff9c6fd6a7c0f95f990965489d6d14
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{7AD98C50-C236-44DA-8B43-8CE05561D02F}|ApplicationControlService.csproj|C:\\GITT\\AppControlService\\ProjectInstaller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{7AD98C50-C236-44DA-8B43-8CE05561D02F}|ApplicationControlService.csproj|solutionrelative:ProjectInstaller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{7AD98C50-C236-44DA-8B43-8CE05561D02F}|ApplicationControlService.csproj|C:\\ApplicationControlService\\ApplicationControlService\\projectinstaller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form",
+      "AbsoluteMoniker": "D:0:0:{7AD98C50-C236-44DA-8B43-8CE05561D02F}|ApplicationControlService.csproj|C:\\GITT\\AppControlService\\projectinstaller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form",
       "RelativeMoniker": "D:0:0:{7AD98C50-C236-44DA-8B43-8CE05561D02F}|ApplicationControlService.csproj|solutionrelative:projectinstaller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form"
     },
     {
+<<<<<<< HEAD
       "AbsoluteMoniker": "D:0:0:{7AD98C50-C236-44DA-8B43-8CE05561D02F}|ApplicationControlService.csproj|C:\\ApplicationControlService\\ApplicationControlService\\processmonitor.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{7AD98C50-C236-44DA-8B43-8CE05561D02F}|ApplicationControlService.csproj|solutionrelative:processmonitor.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
@@ -39,6 +61,9 @@
     },
     {
       "AbsoluteMoniker": "D:0:0:{7AD98C50-C236-44DA-8B43-8CE05561D02F}|ApplicationControlService.csproj|C:\\ApplicationControlService\\ApplicationControlService\\models\\whitelistitem.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+=======
+      "AbsoluteMoniker": "D:0:0:{7AD98C50-C236-44DA-8B43-8CE05561D02F}|ApplicationControlService.csproj|C:\\GITT\\AppControlService\\models\\whitelistitem.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+>>>>>>> 25ba646659ff9c6fd6a7c0f95f990965489d6d14
       "RelativeMoniker": "D:0:0:{7AD98C50-C236-44DA-8B43-8CE05561D02F}|ApplicationControlService.csproj|solutionrelative:models\\whitelistitem.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     }
   ],
@@ -74,10 +99,10 @@
               "$type": "Document",
               "DocumentIndex": 4,
               "Title": "ProjectInstaller.cs [\u041A\u043E\u043D\u0441\u0442\u0440\u0443\u043A\u0442\u043E\u0440]",
-              "DocumentMoniker": "C:\\ApplicationControlService\\ApplicationControlService\\ProjectInstaller.cs",
+              "DocumentMoniker": "C:\\GITT\\AppControlService\\ProjectInstaller.cs",
               "RelativeDocumentMoniker": "ProjectInstaller.cs",
               "ToolTip": "C:\\ApplicationControlService\\ApplicationControlService\\ProjectInstaller.cs [\u041A\u043E\u043D\u0441\u0442\u0440\u0443\u043A\u0442\u043E\u0440]",
-              "RelativeToolTip": "ProjectInstaller.cs [\u041A\u043E\u043D\u0441\u0442\u0440\u0443\u043A\u0442\u043E\u0440]",
+              "RelativeToolTip": "..\\..\\ApplicationControlService\\ApplicationControlService\\ProjectInstaller.cs [\u041A\u043E\u043D\u0441\u0442\u0440\u0443\u043A\u0442\u043E\u0440]",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2026-01-17T12:45:18.937Z"
             },
@@ -85,9 +110,9 @@
               "$type": "Document",
               "DocumentIndex": 6,
               "Title": "ServiceConfiguration.cs",
-              "DocumentMoniker": "C:\\ApplicationControlService\\ApplicationControlService\\Services\\ServiceConfiguration.cs",
+              "DocumentMoniker": "C:\\GITT\\AppControlService\\Services\\ServiceConfiguration.cs",
               "RelativeDocumentMoniker": "Services\\ServiceConfiguration.cs",
-              "ToolTip": "C:\\ApplicationControlService\\ApplicationControlService\\Services\\ServiceConfiguration.cs",
+              "ToolTip": "C:\\GITT\\AppControlService\\Services\\ServiceConfiguration.cs",
               "RelativeToolTip": "Services\\ServiceConfiguration.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAABQAAABGAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
@@ -97,21 +122,20 @@
               "$type": "Document",
               "DocumentIndex": 1,
               "Title": "ApplicationControlService.cs [\u041A\u043E\u043D\u0441\u0442\u0440\u0443\u043A\u0442\u043E\u0440]",
-              "DocumentMoniker": "C:\\ApplicationControlService\\ApplicationControlService\\Services\\ApplicationControlService.cs",
+              "DocumentMoniker": "C:\\GITT\\AppControlService\\Services\\ApplicationControlService.cs",
               "RelativeDocumentMoniker": "Services\\ApplicationControlService.cs",
               "ToolTip": "C:\\ApplicationControlService\\ApplicationControlService\\Services\\ApplicationControlService.cs [\u041A\u043E\u043D\u0441\u0442\u0440\u0443\u043A\u0442\u043E\u0440]",
-              "RelativeToolTip": "Services\\ApplicationControlService.cs [\u041A\u043E\u043D\u0441\u0442\u0440\u0443\u043A\u0442\u043E\u0440]",
+              "RelativeToolTip": "..\\..\\ApplicationControlService\\ApplicationControlService\\Services\\ApplicationControlService.cs [\u041A\u043E\u043D\u0441\u0442\u0440\u0443\u043A\u0442\u043E\u0440]",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-12-12T10:18:26.979Z",
-              "EditorCaption": " [\u041A\u043E\u043D\u0441\u0442\u0440\u0443\u043A\u0442\u043E\u0440]"
+              "WhenOpened": "2025-12-12T10:18:26.979Z"
             },
             {
               "$type": "Document",
               "DocumentIndex": 8,
               "Title": "WinApiHelper.cs",
-              "DocumentMoniker": "C:\\ApplicationControlService\\ApplicationControlService\\Helper\\WinApiHelper.cs",
+              "DocumentMoniker": "C:\\GITT\\AppControlService\\Helper\\WinApiHelper.cs",
               "RelativeDocumentMoniker": "Helper\\WinApiHelper.cs",
-              "ToolTip": "C:\\ApplicationControlService\\ApplicationControlService\\Helper\\WinApiHelper.cs",
+              "ToolTip": "C:\\GITT\\AppControlService\\Helper\\WinApiHelper.cs",
               "RelativeToolTip": "Helper\\WinApiHelper.cs",
               "ViewState": "AgIAAGsAAAAAAAAAAADwv/cCAAAJAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
@@ -121,24 +145,27 @@
               "$type": "Document",
               "DocumentIndex": 0,
               "Title": "ApplicationControlService.cs",
-              "DocumentMoniker": "C:\\ApplicationControlService\\ApplicationControlService\\Services\\ApplicationControlService.cs",
+              "DocumentMoniker": "C:\\GITT\\AppControlService\\Services\\ApplicationControlService.cs",
               "RelativeDocumentMoniker": "Services\\ApplicationControlService.cs",
-              "ToolTip": "C:\\ApplicationControlService\\ApplicationControlService\\Services\\ApplicationControlService.cs",
+              "ToolTip": "C:\\GITT\\AppControlService\\Services\\ApplicationControlService.cs",
               "RelativeToolTip": "Services\\ApplicationControlService.cs",
               "ViewState": "AgIAAA0BAAAAAAAAAAAuwDkBAAAJAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-12-10T12:25:55.084Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-12-10T12:25:55.084Z"
             },
             {
               "$type": "Document",
               "DocumentIndex": 5,
               "Title": "ProcessMonitor.cs",
-              "DocumentMoniker": "C:\\ApplicationControlService\\ApplicationControlService\\ProcessMonitor.cs",
+              "DocumentMoniker": "C:\\GITT\\AppControlService\\ProcessMonitor.cs",
               "RelativeDocumentMoniker": "ProcessMonitor.cs",
-              "ToolTip": "C:\\ApplicationControlService\\ApplicationControlService\\ProcessMonitor.cs",
+              "ToolTip": "C:\\GITT\\AppControlService\\ProcessMonitor.cs",
               "RelativeToolTip": "ProcessMonitor.cs",
+<<<<<<< HEAD
               "ViewState": "AgIAALsEAAAAAAAAAAAAAA8AAAAAAAAAAAAAAA==",
+=======
+              "ViewState": "AgIAAA0BAAAAAAAAAAAUwEQBAAAJAAAAAAAAAA==",
+>>>>>>> 25ba646659ff9c6fd6a7c0f95f990965489d6d14
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2025-12-10T12:04:18.869Z"
             },
@@ -146,9 +173,9 @@
               "$type": "Document",
               "DocumentIndex": 3,
               "Title": "ProjectInstaller.cs",
-              "DocumentMoniker": "C:\\ApplicationControlService\\ApplicationControlService\\ProjectInstaller.cs",
+              "DocumentMoniker": "C:\\GITT\\AppControlService\\ProjectInstaller.cs",
               "RelativeDocumentMoniker": "ProjectInstaller.cs",
-              "ToolTip": "C:\\ApplicationControlService\\ApplicationControlService\\ProjectInstaller.cs",
+              "ToolTip": "C:\\GITT\\AppControlService\\ProjectInstaller.cs",
               "RelativeToolTip": "ProjectInstaller.cs",
               "ViewState": "AgIAAAMAAAAAAAAAAAAAACEAAAABAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
@@ -158,9 +185,9 @@
               "$type": "Document",
               "DocumentIndex": 9,
               "Title": "WhiteListItem.cs",
-              "DocumentMoniker": "C:\\ApplicationControlService\\ApplicationControlService\\Models\\WhiteListItem.cs",
+              "DocumentMoniker": "C:\\GITT\\AppControlService\\Models\\WhiteListItem.cs",
               "RelativeDocumentMoniker": "Models\\WhiteListItem.cs",
-              "ToolTip": "C:\\ApplicationControlService\\ApplicationControlService\\Models\\WhiteListItem.cs",
+              "ToolTip": "C:\\GITT\\AppControlService\\Models\\WhiteListItem.cs",
               "RelativeToolTip": "Models\\WhiteListItem.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAB0AAAA6AAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
@@ -170,14 +197,13 @@
               "$type": "Document",
               "DocumentIndex": 2,
               "Title": "Program.cs",
-              "DocumentMoniker": "C:\\ApplicationControlService\\ApplicationControlService\\Program.cs",
+              "DocumentMoniker": "C:\\GITT\\AppControlService\\Program.cs",
               "RelativeDocumentMoniker": "Program.cs",
-              "ToolTip": "C:\\ApplicationControlService\\ApplicationControlService\\Program.cs",
+              "ToolTip": "C:\\GITT\\AppControlService\\Program.cs",
               "RelativeToolTip": "Program.cs",
               "ViewState": "AgIAABUCAAAAAAAAAAAUwDMCAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-12-10T11:18:34.747Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-12-10T11:18:34.747Z"
             }
           ]
         }
