@@ -204,6 +204,11 @@ namespace ApplicationControlService
                 // Запускаем службу
                 Console.WriteLine("\n7. Запуск службы...");
                 Thread.Sleep(2000);
+                Console.WriteLine("\n8. Ожидание полной инициализации службы...");
+                Thread.Sleep(5000); // Ждем 5 секунд
+
+
+
 
                 if (RunSCCommand("start AppControlService", "запуск"))
                 {
@@ -217,6 +222,7 @@ namespace ApplicationControlService
                     Console.WriteLine("⚠ Служба создана, но не запущена");
                     return false;
                 }
+
             }
             catch (Exception ex)
             {

@@ -1,17 +1,18 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Linq;
 using System.Runtime.Serialization;
 
 namespace ApplicationControlService.Models
 {
-    [DataContract] 
+    [DataContract]
     public class WhiteListItem
     {
-        [DataMember(Name = "Name")]
+        [JsonProperty("Name")]
         public string Name { get; set; }
 
-        [DataMember(Name = "Hash")]
-        public string Hash { get; set; }  // SHA256 хэш (64 символа)
+        [JsonProperty("Hash")]
+        public string Hash { get; set; }
 
         public WhiteListItem() { }
 
@@ -33,7 +34,7 @@ namespace ApplicationControlService.Models
 
         public override string ToString()
         {
-            return $"{Name} ({Hash.Substring(0, 8)}...)";
+            return $"{Name} ({Hash?.Substring(0, Math.Min(8, Hash?.Length ?? 0))}...)";
         }
     }
 }

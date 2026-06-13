@@ -107,7 +107,7 @@ namespace ApplicationControlService
         {
             try
             {
-                // Задержка для предотвращения многократных вызовов
+                // Задержка для предотвращения множественных вызовов
                 Thread.Sleep(1000);
 
                 lock (_lock)
@@ -120,8 +120,18 @@ namespace ApplicationControlService
                         if (lastWriteTime > _lastConfigModified.AddSeconds(1))
                         {
                             WriteServiceLog($"Обнаружено изменение конфигурационного файла");
-                            LoadConfiguration();
-                            _lastConfigModified = lastWriteTime;
+
+                            try
+                            {
+                                LoadConfiguration();
+                                _lastConfigModified = lastWriteTime;
+                                WriteServiceLog("Конфигурация успешно перезагружена");
+                            }
+                            catch (Exception loadEx)
+                            {
+                                WriteServiceLog($"Ошибка перезагрузки конфига: {loadEx.Message}");
+                                // Не падаем, продолжаем работать со старым конфигом
+                            }
                         }
                     }
                 }
@@ -129,6 +139,7 @@ namespace ApplicationControlService
             catch (Exception ex)
             {
                 WriteServiceLog($"Ошибка обработки изменения конфига: {ex.Message}");
+                WriteServiceLog($"Stack trace: {ex.StackTrace}");
             }
         }
 
@@ -142,6 +153,9 @@ namespace ApplicationControlService
                 try
                 {
                     WriteServiceLog("Запуск монитора процессов");
+
+                    // Даем время на полную инициализацию
+                    Thread.Sleep(2000);
 
                     InitializeDirectories();
 
@@ -164,16 +178,20 @@ namespace ApplicationControlService
 
                     // Запускаем таймер проверки конфигурации (каждые 30 секунд)
                     _configReloadTimer = new Timer(CheckConfigReloadCallback, null, 30000, 30000);
+
                     _configWatcher = new FileSystemWatcher(
-                                    Path.GetDirectoryName(_configPath),
-                                    Path.GetFileName(_configPath)
-                                );
+                        Path.GetDirectoryName(_configPath),
+                        Path.GetFileName(_configPath)
+                    );
 
                     _configWatcher.NotifyFilter = NotifyFilters.LastWrite | NotifyFilters.Size;
                     _configWatcher.Changed += ConfigWatcher_Changed;
                     _configWatcher.EnableRaisingEvents = true;
+
                     _isRunning = true;
+
                     WriteServiceLog("Монитор процессов запущен");
+                    WriteServiceLog("Защита активна");
                 }
                 catch (Exception ex)
                 {
@@ -287,47 +305,50 @@ namespace ApplicationControlService
                         return;
                     }
 
-                    using (MemoryStream ms = new MemoryStream(Encoding.UTF8.GetBytes(json)))
+                    // ИСПРАВЛЕНИЕ: Используем Newtonsoft.Json вместо DataContractJsonSerializer
+                    var items = JsonConvert.DeserializeObject<List<WhiteListItem>>(json);
+
+                    if (items == null)
+                        items = new List<WhiteListItem>();
+
+                    var validItems = items.Where(i => i.IsValid()).ToList();
+
+                    var newAllowedHashes = new HashSet<string>(
+                        validItems.Select(i => i.Hash),
+                        StringComparer.OrdinalIgnoreCase);
+
+                    // Атомарная замена хэшей
+                    lock (_lock)
                     {
-                        DataContractJsonSerializer serializer = new DataContractJsonSerializer(
-                            typeof(List<WhiteListItem>),
-                            new DataContractJsonSerializerSettings
-                            {
-                                UseSimpleDictionaryFormat = true,
-                                EmitTypeInformation = System.Runtime.Serialization.EmitTypeInformation.Never
-                            }
-                        );
+                        _allowedHashes = newAllowedHashes;
 
-                        var items = (List<WhiteListItem>)serializer.ReadObject(ms) ?? new List<WhiteListItem>();
+                        // ВАЖНО: Очищаем кэш разрешенных процессов при изменении конфига
+                        _allowedProcessIds.Clear();
+                        _verifiedProcesses.Clear();
 
-                        var validItems = items.Where(i => i.IsValid()).ToList();
-
-                        _allowedHashes = new HashSet<string>(
-                            validItems.Select(i => i.Hash),
-                            StringComparer.OrdinalIgnoreCase);
-
-                        WriteServiceLog($"Загружено {validItems.Count} приложений из белого списка");
-
-                        // ПРОСТОЕ ИЗМЕНЕНИЕ: очищаем кэш при загрузке конфигурации
-                        lock (_lock)
-                        {
-                            _verifiedProcesses.Clear();
-                            WriteServiceLog("Кэш проверенных процессов очищен");
-                        }
+                        WriteServiceLog($"Конфиг загружен: {validItems.Count} приложений из белого списка");
+                        WriteServiceLog($"Кэш процессов очищен для перепроверки");
                     }
                 }
-                catch (Exception ex)
+                catch (Newtonsoft.Json.JsonException jsonEx)
                 {
-                    WriteServiceLog($"Ошибка парсинга конфига: {ex.Message}. Используется пустой список.");
-                    _allowedHashes = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-                    WriteServiceLog($"Файл конфигурации поврежден. Пожалуйста, исправьте его вручную: {_configPath}");
+                    WriteServiceLog($"Ошибка парсинга JSON: {jsonEx.Message}");
+                    WriteServiceLog($"Содержимое файла: {File.ReadAllText(_configPath)}");
+
+                    // Создаем бэкап поврежденного файла
+                    string backupPath = _configPath + ".broken";
+                    File.Copy(_configPath, backupPath, true);
+                    WriteServiceLog($"Создан бэкап поврежденного файла: {backupPath}");
+
+                    // Создаем новый конфиг
+                    CreateDefaultConfiguration();
                 }
             }
             catch (Exception ex)
             {
                 WriteServiceLog($"Ошибка загрузки конфигурации: {ex.Message}");
-                _allowedHashes = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-                Fatal(ex, "LoadConfiguration");
+                WriteServiceLog($"Stack trace: {ex.StackTrace}");
+                // НЕ вызываем Fatal, чтобы служба продолжала работать
             }
         }
 
@@ -403,38 +424,22 @@ namespace ApplicationControlService
         {
             try
             {
-                // ИЗМЕНЕНИЕ: Проверяем, существует ли файл
                 if (File.Exists(_configPath))
                 {
                     WriteServiceLog($"Файл конфигурации уже существует, не перезаписываем: {_configPath}");
                     return;
                 }
 
-                using (MemoryStream ms = new MemoryStream())
+                // ИСПРАВЛЕНИЕ: Используем Newtonsoft.Json для красивого форматирования
+                var settings = new JsonSerializerSettings
                 {
-                    DataContractJsonSerializer serializer = new DataContractJsonSerializer(
-                        typeof(List<WhiteListItem>),
-                        new DataContractJsonSerializerSettings
-                        {
-                            UseSimpleDictionaryFormat = true,
-                            EmitTypeInformation = System.Runtime.Serialization.EmitTypeInformation.Never
-                        }
-                    );
+                    Formatting = Formatting.Indented,
+                    NullValueHandling = NullValueHandling.Ignore
+                };
 
-                    serializer.WriteObject(ms, items);
-                    ms.Position = 0;
-
-                    string json = Encoding.UTF8.GetString(ms.ToArray());
-
-                    // Простое форматирование
-                    json = json.Replace("{\"", "{\n  \"")
-                              .Replace(",\"", ",\n  \"")
-                              .Replace("}]", "}\n]")
-                              .Replace("},{", "},\n  {");
-
-                    File.WriteAllText(_configPath, json, Encoding.UTF8);
-                    WriteServiceLog($"Конфигурация сохранена: {_configPath}");
-                }
+                string json = JsonConvert.SerializeObject(items, settings);
+                File.WriteAllText(_configPath, json, Encoding.UTF8);
+                WriteServiceLog($"Конфигурация сохранена: {_configPath}");
             }
             catch (Exception ex)
             {
@@ -617,160 +622,166 @@ namespace ApplicationControlService
                 UpdateParentChildMap();
 
                 Process[] processes = Process.GetProcesses();
-                int total = processes.Length;
-                int checkedCount = 0;
-                int terminatedCount = 0;
-                int skippedCount = 0;
-                int protectedCount = 0;
 
                 foreach (var process in processes)
                 {
-                    checkedCount++;
-
                     try
                     {
-                        lock (_lock)
-                        {
-                            // Проверяем, разрешен ли родительский процесс
-                            if (IsChildOfAllowedProcess(process.Id))
-                            {
-                                // Добавляем в разрешенные
-                                _allowedProcessIds.Add(process.Id);
-                                continue; // Пропускаем проверку для дочерних процессов
-                            }
-
-                            // Даже если процесс в кэше, перепроверяем хэш и наличие в белом списке
-                            if (_verifiedProcesses.TryGetValue(process.Id, out var cached))
-                            {
-                                // Проверяем, не изменился ли файл
-                                if (File.GetLastWriteTimeUtc(cached.FilePath) == cached.FileLastWriteUtc)
-                                {
-                                    isCurrentlyInWhiteList = _allowedHashes.Contains(cached.Hash);
-                                    currentHash = cached.Hash;
-
-                                    if (isCurrentlyInWhiteList)
-                                    {
-                                        // Добавляем в разрешенные (для дочерних процессов)
-                                        _allowedProcessIds.Add(process.Id);
-                                        continue;
-                                    }
-                                }
-                            }
-                        }
-
                         // Пропускаем себя
                         if (process.Id == _currentProcessId)
                             continue;
 
-                        // Получаем расширенную информацию через WinAPI
-                        var processInfo = WinApiHelper.GetExtendedProcessInfo(process.Id);
-
-                        // Проверяем, можно ли завершать этот процесс
-                        if (!CanTerminateProcess(process, processInfo))
-                        {
-                            if (processInfo.Type == WinApiHelper.ProcessType.SystemCritical ||
-                                processInfo.Type == WinApiHelper.ProcessType.SystemService)
-                            {
-                                protectedCount++;
-                            }
-                            else
-                            {
-                                skippedCount++;
-                            }
-                            continue;
-                        }
-
-                        // Получаем путь к файлу
-                        string filePath = processInfo.FilePath;
-                        if (string.IsNullOrEmpty(filePath) || !File.Exists(filePath))
-                        {
-                            try
-                            {
-                                filePath = process.MainModule?.FileName;
-                            }
-                            catch { }
-
-                            if (string.IsNullOrEmpty(filePath) || !File.Exists(filePath))
-                            {
-                                skippedCount++;
-                                continue;
-                            }
-                        }
-
-                        // Вычисляем хэш
-                        string hash = CalculateSHA256(filePath);
-                        if (string.IsNullOrEmpty(hash))
-                        {
-                            skippedCount++;
-                            continue;
-                        }
-
-                        // Проверяем, разрешен ли процесс
-                        bool isAllowed = _allowedHashes.Contains(hash);
-
-                        // Логируем детали
-                        WriteDetailedLog(processInfo, hash, isAllowed);
-
-                        // Кэшируем проверенный процесс
                         lock (_lock)
                         {
-                            _verifiedProcesses[process.Id] = new VerifiedProcessEntry
-                            {
-                                ProcessId = process.Id,
-                                FilePath = filePath,
-                                Hash = hash,
-                                FileLastWriteUtc = File.GetLastWriteTimeUtc(filePath),
-                                VerifiedAtUtc = DateTime.UtcNow
-                            };
-                        }
+                            // ВАЖНО: При каждой проверке пересчитываем разрешение, 
+                            // не полагаясь только на кэш
 
-                        if (isAllowed)
-                        {
-                            // Разрешаем процесс и его будущие дочерние процессы
-                            _allowedProcessIds.Add(process.Id);
-                        }
-                        else if (!isAllowed && processInfo.Type == WinApiHelper.ProcessType.UserApplication)
-                        {
-                            // Пытаемся завершить только пользовательские приложения
-                            try
-                            {
-                                bool terminated = TryTerminateProcess(process, processInfo);
+                            // Получаем расширенную информацию через WinAPI
+                            var processInfo = WinApiHelper.GetExtendedProcessInfo(process.Id);
 
-                                if (terminated)
+                            // Проверяем, можно ли завершать этот процесс
+                            if (!CanTerminateProcess(process, processInfo))
+                                continue;
+
+                            // Получаем путь к файлу
+                            string filePath = processInfo.FilePath;
+                            if (string.IsNullOrEmpty(filePath) || !File.Exists(filePath))
+                            {
+                                try
                                 {
-                                    terminatedCount++;
-                                    WriteTerminationLog(processInfo);
-                                    WriteDetailedLogResult(processInfo, true);
+                                    filePath = process.MainModule?.FileName;
+                                }
+                                catch { }
 
-                                    lock (_lock)
+                                if (string.IsNullOrEmpty(filePath) || !File.Exists(filePath))
+                                    continue;
+                            }
+
+                            // ВЫЧИСЛЯЕМ ХЭШ КАЖДЫЙ РАЗ (или проверяем изменения)
+                            string hash = CalculateSHA256(filePath);
+                            if (string.IsNullOrEmpty(hash))
+                                continue;
+
+                            // ПРОВЕРЯЕМ В БЕЛОМ СПИСКЕ (актуальная проверка!)
+                            bool isCurrentlyAllowed = _allowedHashes.Contains(hash);
+
+                            // Проверяем, разрешен ли родительский процесс (только для новых процессов)
+                            bool parentAllowed = IsChildOfAllowedProcess(process.Id);
+
+                            // Логика принятия решения:
+                            // 1. Если процесс в белом списке по хэшу -> разрешен
+                            // 2. Если процесс уже был разрешен и ЕГО ФАЙЛ НЕ ИЗМЕНИЛСЯ, но хэш НЕ в белом списке -> завершаем
+                            // 3. Если родитель разрешен и процесс НЕ был в кэше -> временно разрешаем
+
+                            bool isAllowed = isCurrentlyAllowed;
+                            bool isCachedAndChanged = false;
+
+                            // Проверяем кэшированный процесс
+                            if (_verifiedProcesses.TryGetValue(process.Id, out var cached))
+                            {
+                                // Если файл не менялся, но хэш больше не в белом списке
+                                if (File.GetLastWriteTimeUtc(cached.FilePath) == cached.FileLastWriteUtc)
+                                {
+                                    if (!isCurrentlyAllowed && cached.Hash == hash)
                                     {
-                                        _verifiedProcesses.Remove(process.Id);
-                                        _allowedProcessIds.Remove(process.Id);
-                                        // Удаляем из карты родитель-потомок
-                                        RemoveFromParentChildMap(process.Id);
+                                        // Процесс был разрешен, но теперь его удалили из белого списка!
+                                        // Нужно завершить
+                                        isAllowed = false;
+                                        isCachedAndChanged = true;
+
+                                        WriteServiceLog($"Процесс {processInfo.ProcessName} (PID: {process.Id}) больше не в белом списке, завершаем...");
+                                    }
+                                    else if (isCurrentlyAllowed)
+                                    {
+                                        isAllowed = true;
                                     }
                                 }
                                 else
                                 {
+                                    // Файл изменился - перепроверяем
+                                    isAllowed = isCurrentlyAllowed;
+                                }
+                            }
+                            else
+                            {
+                                // Новый процесс - проверяем родителя
+                                if (parentAllowed && !isCurrentlyAllowed)
+                                {
+                                    // Временно разрешаем дочерний процесс разрешенного родителя
+                                    // НО! Отмечаем, что это временное разрешение
+                                    isAllowed = true;
+                                    WriteServiceLog($"Дочерний процесс {processInfo.ProcessName} (PID: {process.Id}) разрешен временно (родитель разрешен)");
+                                }
+                                else
+                                {
+                                    isAllowed = isCurrentlyAllowed;
+                                }
+                            }
+
+                            // Логируем детали
+                            WriteDetailedLog(processInfo, hash, isAllowed);
+
+                            // Обновляем кэш
+                            lock (_lock)
+                            {
+                                _verifiedProcesses[process.Id] = new VerifiedProcessEntry
+                                {
+                                    ProcessId = process.Id,
+                                    FilePath = filePath,
+                                    Hash = hash,
+                                    FileLastWriteUtc = File.GetLastWriteTimeUtc(filePath),
+                                    VerifiedAtUtc = DateTime.UtcNow
+                                };
+                            }
+
+                            // Завершаем, если не разрешен
+                            if (!isAllowed && processInfo.Type == WinApiHelper.ProcessType.UserApplication)
+                            {
+                                try
+                                {
+                                    bool terminated = TryTerminateProcess(process, processInfo);
+
+                                    if (terminated)
+                                    {
+                                        WriteTerminationLog(processInfo);
+                                        WriteDetailedLogResult(processInfo, true);
+
+                                        lock (_lock)
+                                        {
+                                            _verifiedProcesses.Remove(process.Id);
+                                            _allowedProcessIds.Remove(process.Id);
+                                            RemoveFromParentChildMap(process.Id);
+                                        }
+                                    }
+                                    else
+                                    {
+                                        WriteDetailedLogResult(processInfo, false);
+                                    }
+                                }
+                                catch (Exception killEx)
+                                {
+                                    WriteServiceLog($"Не удалось завершить {processInfo.ProcessName}: {killEx.Message}");
                                     WriteDetailedLogResult(processInfo, false);
                                 }
                             }
-                            catch (Exception killEx)
+                            else if (isAllowed)
                             {
-                                WriteServiceLog($"Не удалось завершить {processInfo.ProcessName}: {killEx.Message}");
-                                WriteDetailedLogResult(processInfo, false);
+                                // Разрешенный процесс добавляем в список для детей
+                                lock (_lock)
+                                {
+                                    _allowedProcessIds.Add(process.Id);
+                                }
                             }
                         }
                     }
                     catch (Win32Exception ex) when (ex.NativeErrorCode == 5)
                     {
-                        skippedCount++;
+                        // Access denied - пропускаем
                         continue;
                     }
                     catch (Exception ex)
                     {
                         WriteServiceLog($"Ошибка проверки процесса {process.ProcessName}: {ex.Message}");
-                        skippedCount++;
                         continue;
                     }
                 }

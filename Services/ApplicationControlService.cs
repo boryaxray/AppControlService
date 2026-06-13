@@ -12,7 +12,11 @@ namespace ApplicationControlService
         private ServiceConfiguration _config;
         private Timer _healthCheckTimer;
         private Timer _protectionTimer;
+        private Timer _stopProtectionTimer;
         private static bool _allowStop = false;
+        private bool _isFullyInitialized = false;
+        private DateTime _startTime;
+        private readonly TimeSpan _protectionDuration = TimeSpan.FromSeconds(30); // Защита первые 30 секунд
 
         public ApplicationControlService()
         {
@@ -30,6 +34,12 @@ namespace ApplicationControlService
             try
             {
                 this.RequestAdditionalTime(60000);
+
+                _startTime = DateTime.Now;
+                _isFullyInitialized = false;
+
+                LogService("=== СЛУЖБА ЗАПУСКАЕТСЯ ===");
+                LogService("Включена защита от немедленной остановки");
 
                 string logsPath = null;
                 string whiteListPath = null;
@@ -103,7 +113,16 @@ namespace ApplicationControlService
                     TimeSpan.FromSeconds(60),
                     TimeSpan.FromSeconds(60));
 
+                // ВАЖНО: Таймер для включения возможности остановки через N секунд
+                _stopProtectionTimer = new Timer(EnableStopCallback, null,
+                    _protectionDuration,
+                    TimeSpan.FromMilliseconds(-1)); // Одноразовый таймер
+
+                // Сбрасываем счетчик сбоев при успешном запуске
+                ResetFailureCount();
+
                 LogService("Служба успешно запущена");
+                LogService($"Остановка службы будет разрешена через {_protectionDuration.TotalSeconds} секунд");
                 ExitCode = 0;
             }
             catch (Exception ex)
@@ -114,6 +133,61 @@ namespace ApplicationControlService
             }
         }
 
+        private void EnableStopCallback(object state)
+        {
+            _isFullyInitialized = true;
+            LogService("=== ЗАЩИТА СНЯТА ===");
+            LogService("Теперь службу можно останавливать штатными средствами");
+
+            _stopProtectionTimer?.Dispose();
+            _stopProtectionTimer = null;
+        }
+
+        private void ResetFailureCount()
+        {
+            try
+            {
+                // Способ 1: Через sc.exe
+                using (Process process = new Process())
+                {
+                    process.StartInfo.FileName = "sc.exe";
+                    process.StartInfo.Arguments = "failureflag AppControlService 0";
+                    process.StartInfo.UseShellExecute = false;
+                    process.StartInfo.CreateNoWindow = true;
+                    process.StartInfo.RedirectStandardOutput = true;
+                    process.Start();
+                    process.WaitForExit(5000);
+
+                    if (process.ExitCode == 0)
+                    {
+                        LogService("✓ Счетчик сбоев сброшен (через sc.exe)");
+                    }
+                }
+
+                // Способ 2: Через реестр (более надежный)
+                try
+                {
+                    string servicePath = @"SYSTEM\CurrentControlSet\Services\AppControlService";
+                    using (var key = Microsoft.Win32.Registry.LocalMachine.OpenSubKey(servicePath, true))
+                    {
+                        if (key != null)
+                        {
+                            // Сбрасываем счетчик сбоев
+                            key.SetValue("FailureActionsOnNonCrashFailures", 1, Microsoft.Win32.RegistryValueKind.DWord);
+                            LogService("✓ Настройки восстановления подтверждены в реестре");
+                        }
+                    }
+                }
+                catch (Exception regEx)
+                {
+                    LogService($"Ошибка сброса через реестр: {regEx.Message}");
+                }
+            }
+            catch (Exception ex)
+            {
+                LogService($"Ошибка сброса счетчика сбоев: {ex.Message}");
+            }
+        }
 
         private void StartMonitor()
         {
@@ -128,8 +202,10 @@ namespace ApplicationControlService
                 _monitor.OnFatalError += ex =>
                 {
                     LogService($"КРИТИЧЕСКАЯ ОШИБКА МОНИТОРА: {ex.Message}");
+                    LogService($"Stack trace: {ex.StackTrace}");
 
-                    Thread.Sleep(5000);
+                    // Не пытаемся сразу перезапустить, даем время
+                    Thread.Sleep(10000);
                     try
                     {
                         LogService("Попытка перезапуска монитора...");
@@ -139,6 +215,7 @@ namespace ApplicationControlService
                     catch (Exception restartEx)
                     {
                         LogService($"Не удалось перезапустить монитор: {restartEx.Message}");
+                        LogService($"Stack trace: {restartEx.StackTrace}");
                     }
                 };
 
@@ -148,6 +225,7 @@ namespace ApplicationControlService
             catch (Exception ex)
             {
                 LogService($"Ошибка запуска монитора: {ex.Message}");
+                LogService($"Stack trace: {ex.StackTrace}");
                 throw;
             }
         }
@@ -196,7 +274,6 @@ namespace ApplicationControlService
                 LogService($"Protection ошибка: {ex.Message}");
             }
         }
-
 
         private void CheckRegistryIntegrity()
         {
@@ -254,14 +331,59 @@ namespace ApplicationControlService
 
         protected override void OnStop()
         {
+            // Проверяем, можно ли останавливать службу
+            if (!CanStopService())
+            {
+                LogService("ОСТАНОВКА ОТКЛОНЕНА: Служба еще не полностью инициализирована");
+                LogService($"Пожалуйста, подождите {_protectionDuration.TotalSeconds} секунд после запуска");
+                return;
+            }
+
+            // Проверяем, разрешена ли остановка (для защиты от kill)
+            if (!_allowStop && !Environment.HasShutdownStarted)
+            {
+                // Если прошло больше protection времени, но флаг не установлен - устанавливаем его
+                if ((DateTime.Now - _startTime) > _protectionDuration)
+                {
+                    LogService("Принудительное разрешение остановки (таймаут защиты истек)");
+                    _allowStop = true;
+                }
+                else
+                {
+                    LogService($"ПРЕДОТВРАЩЕНА ОСТАНОВКА СЛУЖБЫ (время работы: {(DateTime.Now - _startTime).TotalSeconds:F1} сек)");
+                    LogService($"Для остановки используйте: sc stop AppControlService");
+                    return;
+                }
+            }
+
             LogService("Остановка службы...");
 
             _healthCheckTimer?.Dispose();
             _protectionTimer?.Dispose();
+            _stopProtectionTimer?.Dispose();
             _monitor?.Stop();
             _monitor?.Dispose();
 
             LogService("Служба остановлена");
+            _allowStop = false;
+            _isFullyInitialized = false;
+        }
+
+        private bool CanStopService()
+        {
+            // Если служба полностью инициализирована - можно останавливать
+            if (_isFullyInitialized)
+                return true;
+
+            // Если прошло больше protection времени, но флаг по какой-то причине не установлен
+            if ((DateTime.Now - _startTime) > _protectionDuration)
+                return true;
+
+            // Если это завершение системы
+            if (Environment.HasShutdownStarted)
+                return true;
+
+            return false;
         }
 
         protected override bool OnPowerEvent(PowerBroadcastStatus powerStatus)
